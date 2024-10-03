@@ -467,16 +467,16 @@ CREATE PROCEDURE insert_base_data()
 BEGIN
     DECLARE numCity INT DEFAULT 7;
     DECLARE numStore INT DEFAULT 55;
-    DECLARE numCustomer INT DEFAULT 100000;
+    DECLARE numCustomer INT DEFAULT 30000;
     DECLARE numBrand INT DEFAULT 10;
     DECLARE numCategory INT DEFAULT 10;
     DECLARE numProduct INT DEFAULT 1200;
     DECLARE minPrice DECIMAL(15, 2) DEFAULT 10;
     DECLARE maxPrice DECIMAL(15, 2) DEFAULT 10000;
     DECLARE numSources INT DEFAULT 10;
-    DECLARE fromDate DATE DEFAULT '2020-01-01';
+    DECLARE fromDate DATE DEFAULT '2023-01-01';
     DECLARE toDate DATE DEFAULT '2024-10-02';
-    DECLARE numOrders INT DEFAULT 400000;
+    DECLARE numOrders INT DEFAULT 40000;
     DECLARE minDetail INT DEFAULT 1;
     DECLARE maxDetail INT DEFAULT 5;
 
@@ -496,7 +496,7 @@ CREATE PROCEDURE update_total_order()
 BEGIN
     WITH sdPrice(order_id, totalStandardPricePerProduct, totalPrice) AS
     (
-        SELECT od.order_id, p.standardPrice * od.quantity AS "totalStandardPrice", od.total
+        SELECT od.order_id, p.standardPrice * od.quantity AS totalStandardPricePerProduct, od.total
         FROM sales_order_detail od 
         INNER JOIN production_product p ON od.product_id = p.product_id
     ),
@@ -509,12 +509,14 @@ BEGIN
     UPDATE sales_order so
     JOIN AggregatedPrices ap ON so.order_id = ap.order_id
     SET so.standardCost = ap.standardCost, 
-        so.total = ap.total;
+        so.total = ap.total
+    WHERE so.standardCost <> ap.standardCost
+       OR so.total <> ap.total;
 END;
+
 $$
 DELIMITER ;
 
-START TRANSACTION;
+
 CALL insert_base_data();
 CALL update_total_order();
-COMMIT;

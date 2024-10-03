@@ -1,8 +1,8 @@
 -- RDBMS: MySQL
 
--- vi du so luong khach hang tang truong moi nam la 10% thi chugn ta co 1 nam se tang 100000*0.1 = 10000 khach hang moi
--- vay moi ngay co 10000/365 = 27 khach hang
--- mot ngay co khoang 1000-2000 don hang moi
+-- vi du so luong khach hang tang truong moi nam la 10% thi chugn ta co 1 nam se tang 30000*0.1 = 3000 khach hang moi
+-- vay moi ngay co 3000/365 = 8 khach hang
+-- mot ngay co khoang 500-1000 don hang moi
 
 USE sales_db;
 
@@ -66,7 +66,3 @@ BEGIN
 END$$
 
 DELIMITER ;
-
--- Để xóa thủ tục sau khi kiểm tra
-CALL generate_daily_data(1, 2, 1, 2);
-DROP PROCEDURE IF EXISTS generate_daily_data;
