@@ -2,7 +2,7 @@
 
 DROP DATABASE IF EXISTS sales_db;
 -- create database if not exists
-CREATE DATABASE sales_db;
+CREATE DATABASE sales_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 USE sales_db;
 
@@ -118,6 +118,28 @@ ALTER TABLE sales_order ADD CONSTRAINT fk_store_order FOREIGN KEY (store_id) REF
 ALTER TABLE sales_order ADD CONSTRAINT fk_source_online FOREIGN KEY (source_online_id) REFERENCES sales_source_online(source_online_id);
 ALTER TABLE sales_order_detail ADD CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES sales_order(order_id);
 ALTER TABLE sales_order_detail ADD CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES production_product(product_id);
+
+-- INSERT CITY FIRST FOR VISUALIZATION
+
+INSERT INTO sales_city(name, createdDate)
+VALUES
+    ("Hà Nội", "2024-10-4"),
+    ("Hồ Chí Minh", "2024-10-4"),
+    ("Hải Phòng", "2024-10-4"),
+    ("Cần Thơ", "2024-10-4"),
+    ("Đà Nẵng", "2024-10-4"),
+    ("Biên Hòa", "2024-10-4"),
+    ("Hải Dương", "2024-10-4"),
+    ("Huế", "2024-10-4"),
+    ("Thuận An", "2024-10-4"),
+    ("Thủ Đức", "2024-10-4");
+
+INSERT INTO sales_source_online(link_name, createdDate)
+VALUES
+    ("Shopee", "2024-10-4"),
+    ("Tiktok", "2024-10-4"),
+    ("Tiki", "2024-10-4"),
+    ("Lazada", "2024-10-4");
 
 DELIMITER $$
 
@@ -465,23 +487,21 @@ END;
 -- MAIN FUCNTION TO INITIAL DATABASE ----
 CREATE PROCEDURE insert_base_data()
 BEGIN
-    DECLARE numCity INT DEFAULT 7;
     DECLARE numStore INT DEFAULT 55;
-    DECLARE numCustomer INT DEFAULT 30000;
+    DECLARE numCustomer INT DEFAULT 100000;
     DECLARE numBrand INT DEFAULT 10;
     DECLARE numCategory INT DEFAULT 10;
     DECLARE numProduct INT DEFAULT 1200;
     DECLARE minPrice DECIMAL(15, 2) DEFAULT 10;
     DECLARE maxPrice DECIMAL(15, 2) DEFAULT 10000;
-    DECLARE numSources INT DEFAULT 10;
-    DECLARE fromDate DATE DEFAULT '2023-01-01';
-    DECLARE toDate DATE DEFAULT '2024-10-02';
-    DECLARE numOrders INT DEFAULT 40000;
+    DECLARE fromDate DATE DEFAULT '2021-01-01';
+    DECLARE toDate DATE DEFAULT '2024-10-03';
+    DECLARE numOrders INT DEFAULT 400000;
     DECLARE minDetail INT DEFAULT 1;
     DECLARE maxDetail INT DEFAULT 5;
 
-    CALL insert_sales_city_data(numCity);
-    CALL insert_sales_source_online_data(numSources);
+
+
     CALL insert_sales_store_data(numStore);
     CALL insert_sales_employee_data();
     CALL insert_sales_customer_data(numCustomer);
@@ -515,8 +535,8 @@ BEGIN
 END;
 
 
--- vi du so luong khach hang tang truong moi nam la 10% thi chugn ta co 1 nam se tang 30000*0.1 = 3000 khach hang moi
--- vay moi ngay co 3000/365 = 8 khach hang
+-- vi du so luong khach hang tang truong moi nam la 10% thi chugn ta co 1 nam se tang 100000*0.1 = 10000 khach hang moi
+-- vay moi ngay co 10000/365 = 27 khach hang
 -- mot ngay co khoang 500-1000 don hang moi
 CREATE PROCEDURE generate_daily_data(
     IN minCustomers INT,

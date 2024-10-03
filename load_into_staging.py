@@ -143,7 +143,6 @@ def load_data_to_psql(mysql_conn, psql_conn, EDR):
                 df['updateDate'] = datetime.today().strftime("%Y-%m-%d")
                 df['sourceSystem'] = 'MySQL'
                 df['isProcessed'] = 0
-                df['batchId'] = None
 
                 if schema == 'sales' and table == 'order':
                     # astype to int if not null

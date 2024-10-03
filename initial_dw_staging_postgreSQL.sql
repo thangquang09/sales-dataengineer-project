@@ -1,5 +1,7 @@
 CREATE DATABASE sales_dw_staging;
 
+USE sales_dw_staging;
+
 CREATE SCHEMA production;
 CREATE SCHEMA sales;
 
@@ -19,8 +21,7 @@ CREATE TABLE production.product (
     insertDate DATE DEFAULT CURRENT_DATE,
     updateDate DATE,
     sourceSystem VARCHAR(50) DEFAULT 'MySQL',
-    isProcessed BOOLEAN DEFAULT FALSE,
-    batchID INT
+    isProcessed BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE production.brand (
@@ -32,8 +33,7 @@ CREATE TABLE production.brand (
     insertDate DATE DEFAULT CURRENT_DATE,
     updateDate DATE,
     sourceSystem VARCHAR(50) DEFAULT 'MySQL',
-    isProcessed BOOLEAN DEFAULT FALSE,
-    batchID INT
+    isProcessed BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE production.category (
@@ -45,8 +45,7 @@ CREATE TABLE production.category (
     insertDate DATE DEFAULT CURRENT_DATE,
     updateDate DATE,
     sourceSystem VARCHAR(50) DEFAULT 'MySQL',
-    isProcessed BOOLEAN DEFAULT FALSE,
-    batchID INT
+    isProcessed BOOLEAN DEFAULT FALSE
 );
 
 -- for sales schema
@@ -60,8 +59,7 @@ CREATE TABLE sales.store (
     insertDate DATE DEFAULT CURRENT_DATE,
     updateDate DATE,
     sourceSystem VARCHAR(50) DEFAULT 'MySQL',
-    isProcessed BOOLEAN DEFAULT FALSE,
-    batchID INT
+    isProcessed BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE sales.city (
@@ -73,8 +71,7 @@ CREATE TABLE sales.city (
     insertDate DATE DEFAULT CURRENT_DATE,
     updateDate DATE,
     sourceSystem VARCHAR(50) DEFAULT 'MySQL',
-    isProcessed BOOLEAN DEFAULT FALSE,
-    batchID INT
+    isProcessed BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE sales.employee (
@@ -90,8 +87,7 @@ CREATE TABLE sales.employee (
     insertDate DATE DEFAULT CURRENT_DATE,
     updateDate DATE,
     sourceSystem VARCHAR(50) DEFAULT 'MySQL',
-    isProcessed BOOLEAN DEFAULT FALSE,
-    batchID INT
+    isProcessed BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE sales.customer (
@@ -105,8 +101,7 @@ CREATE TABLE sales.customer (
     insertDate DATE DEFAULT CURRENT_DATE,
     updateDate DATE,
     sourceSystem VARCHAR(50) DEFAULT 'MySQL',
-    isProcessed BOOLEAN DEFAULT FALSE,
-    batchID INT
+    isProcessed BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE sales.order (
@@ -126,8 +121,7 @@ CREATE TABLE sales.order (
     insertDate DATE DEFAULT CURRENT_DATE,
     updateDate DATE,
     sourceSystem VARCHAR(50) DEFAULT 'MySQL',
-    isProcessed BOOLEAN DEFAULT FALSE,
-    batchID INT
+    isProcessed BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE sales.order_detail (
@@ -143,8 +137,7 @@ CREATE TABLE sales.order_detail (
     insertDate DATE DEFAULT CURRENT_DATE,
     updateDate DATE,
     sourceSystem VARCHAR(50) DEFAULT 'MySQL',
-    isProcessed BOOLEAN DEFAULT FALSE,
-    batchID INT
+    isProcessed BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE sales.source_online (
@@ -156,8 +149,7 @@ CREATE TABLE sales.source_online (
     insertDate DATE DEFAULT CURRENT_DATE,
     updateDate DATE,
     sourceSystem VARCHAR(50) DEFAULT 'MySQL',
-    isProcessed BOOLEAN DEFAULT FALSE,
-    batchID INT
+    isProcessed BOOLEAN DEFAULT FALSE
 );
 
 -- Thêm các ràng buộc khóa ngoại
