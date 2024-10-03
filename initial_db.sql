@@ -10,7 +10,7 @@ USE sales_db;
 
 -- for productions schema
 CREATE TABLE production_product (
-    product_id INT PRIMARY KEY,
+    product_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     description VARCHAR(255),
     size FLOAT,
@@ -24,14 +24,14 @@ CREATE TABLE production_product (
 );
 
 CREATE TABLE production_brand (
-    brand_id INT PRIMARY KEY,
+    brand_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     createdDate DATE NOT NULL,
     updatedDate DATE
 );
 
 CREATE TABLE production_category (
-    category_id INT PRIMARY KEY,
+    category_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     createdDATE DATE NOT NULL,
     updatedDATE DATE
@@ -39,7 +39,7 @@ CREATE TABLE production_category (
 
 -- for sales schema
 CREATE TABLE sales_store (
-    store_id INT PRIMARY KEY,
+    store_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     city_id INT NOT NULL,
     createdDate DATE NOT NULL,
@@ -47,14 +47,14 @@ CREATE TABLE sales_store (
 );
 
 CREATE TABLE sales_city (
-    city_id INT PRIMARY KEY,
+    city_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     createdDate DATE NOT NULL,
     updatedDate DATE
 );
 
 CREATE TABLE sales_employee (
-    employee_id INT PRIMARY KEY,
+    employee_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     dob DATE,
     identityNumber VARCHAR(20),
@@ -65,7 +65,7 @@ CREATE TABLE sales_employee (
 );
 
 CREATE TABLE sales_customer (
-    customer_id INT PRIMARY KEY,
+    customer_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(50) NOT NULL,
     phone VARCHAR(20),
@@ -74,7 +74,7 @@ CREATE TABLE sales_customer (
 );
 
 CREATE TABLE sales_order (
-    order_id INT PRIMARY KEY,
+    order_id INT PRIMARY KEY AUTO_INCREMENT,
     orderDate DATE NOT NULL,
     total DECIMAL(15, 2) NOT NULL DEFAULT 0,
     standardCost DECIMAL(15, 2),
@@ -89,7 +89,7 @@ CREATE TABLE sales_order (
 );
 
 CREATE TABLE sales_order_detail (
-    order_detail_id INT PRIMARY KEY,
+    order_detail_id INT PRIMARY KEY AUTO_INCREMENT,
     product_id INT,
     quantity INT,
     price DECIMAL(15, 2) DEFAULT 0,
@@ -100,7 +100,7 @@ CREATE TABLE sales_order_detail (
 );
 
 CREATE TABLE sales_source_online (
-    source_online_id INT PRIMARY KEY,
+    source_online_id INT PRIMARY KEY AUTO_INCREMENT,
     link_name VARCHAR(255) NOT NULL,
     createdDATE DATE NOT NULL,
     updatedDATE DATE
@@ -126,16 +126,13 @@ DELIMITER $$
 ---- insert sales_city table ----
 CREATE PROCEDURE insert_sales_city(IN name VARCHAR(255))
 BEGIN
-    DECLARE newest_city_id INT;
     DECLARE createdDate DATE;
 
     SET createdDate = CURDATE();
 
-    SELECT COALESCE(MAX(city_id), 0) + 1 INTO newest_city_id
-    FROM sales_city;
 
-    INSERT INTO sales_city (city_id, name, createdDate)
-    VALUES (newest_city_id, name, createdDate);
+    INSERT INTO sales_city (name, createdDate)
+    VALUES (name, createdDate);
 END;
 
 CREATE PROCEDURE insert_sales_city_data(IN numCities INT)
@@ -152,16 +149,12 @@ END;
 
 CREATE PROCEDURE insert_sales_store(IN name VARCHAR(255), IN city_id INT)
 BEGIN
-    DECLARE newest_store_id INT;
     DECLARE createdDate DATE;
 
     SET createdDate = CURDATE();
 
-    SELECT COALESCE(MAX(store_id), 0) + 1 INTO newest_store_id
-    FROM sales_store;
-
-    INSERT INTO sales_store (store_id, name, city_id, createdDate)
-    VALUES (newest_store_id, name, city_id, createdDate);
+    INSERT INTO sales_store (name, city_id, createdDate)
+    VALUES (name, city_id, createdDate);
 END;
 
 
@@ -181,16 +174,12 @@ END;
 
 CREATE PROCEDURE insert_sales_employee(IN name VARCHAR(255), IN store_id INT)
 BEGIN
-    DECLARE newest_employee_id INT;
     DECLARE createdDate DATE;
 
     SET createdDate = CURDATE();
 
-    SELECT COALESCE(MAX(employee_id), 0) + 1 INTO newest_employee_id
-    FROM sales_employee;
-
-    INSERT INTO sales_employee (employee_id, name, store_id, createdDate)
-    VALUES (newest_employee_id, name, store_id, createdDate);
+    INSERT INTO sales_employee (name, store_id, createdDate)
+    VALUES (name, store_id, createdDate);
 END;
 
 CREATE PROCEDURE insert_sales_employee_data()
@@ -230,16 +219,12 @@ END;
 ---- insert sales_customer table ----
 CREATE PROCEDURE insert_sales_customer(IN name VARCHAR(255), IN email VARCHAR(50))
 BEGIN
-    DECLARE newest_customer_id INT;
     DECLARE createdDate DATE;
 
     SET createdDate = CURDATE();
 
-    SELECT COALESCE(MAX(customer_id), 0) + 1 INTO newest_customer_id
-    FROM sales_customer;
-
-    INSERT INTO sales_customer (customer_id, name, email, createdDate)
-    VALUES (newest_customer_id, name, email, createdDate);
+    INSERT INTO sales_customer (name, email, createdDate)
+    VALUES (name, email, createdDate);
 END;
 
 CREATE PROCEDURE insert_sales_customer_data(IN numCustomers INT)
@@ -255,16 +240,12 @@ END;
 ---- insert sales_source_online table ----
 CREATE PROCEDURE insert_sales_source_online(IN name VARCHAR(255))
 BEGIN
-    DECLARE newest_source_online_id INT;
     DECLARE createdDate DATE;
 
     SET createdDate = CURDATE();
 
-    SELECT COALESCE(MAX(source_online_id), 0) + 1 INTO newest_source_online_id
-    FROM sales_source_online;
-
-    INSERT INTO sales_source_online (source_online_id, link_name, createdDate)
-    VALUES (newest_source_online_id, name, createdDate);
+    INSERT INTO sales_source_online (link_name, createdDate)
+    VALUES (name, createdDate);
 END;
 
 
@@ -281,16 +262,12 @@ END;
 ---- insert production_brand table ----
 CREATE PROCEDURE insert_production_brand(IN name VARCHAR(255))
 BEGIN
-    DECLARE newest_brand_id INT;
     DECLARE createdDate DATE;
 
     SET createdDate = CURDATE();
 
-    SELECT COALESCE(MAX(brand_id), 0) + 1 INTO newest_brand_id
-    FROM production_brand;
-
-    INSERT INTO production_brand (brand_id, name, createdDate)
-    VALUES (newest_brand_id, name, createdDate);
+    INSERT INTO production_brand (name, createdDate)
+    VALUES (name, createdDate);
 END;
 
 
@@ -307,16 +284,12 @@ END;
 ---- insert production_category table ----
 CREATE PROCEDURE insert_production_category(IN name VARCHAR(255))
 BEGIN
-    DECLARE newest_category_id INT;
     DECLARE createdDate DATE;
 
     SET createdDate = CURDATE();
 
-    SELECT COALESCE(MAX(category_id), 0) + 1 INTO newest_category_id
-    FROM production_category;
-
-    INSERT INTO production_category (category_id, name, createdDate)
-    VALUES (newest_category_id, name, createdDate);
+    INSERT INTO production_category (name, createdDate)
+    VALUES (name, createdDate);
 END;
 
 CREATE PROCEDURE insert_production_category_data(IN numCategories INT)
@@ -333,7 +306,6 @@ END;
 ---- insert production_product table ----
 CREATE PROCEDURE insert_production_product(IN name VARCHAR(255), IN brand_id INT, IN category_id INT, IN price DECIMAL(15, 2))
 BEGIN
-    DECLARE newest_product_id INT;
     DECLARE createdDate DATE;
     DECLARE standardPrice DECIMAL(15, 2);
     DECLARE max_percent DECIMAL(5, 2) DEFAULT 90.00;
@@ -342,11 +314,8 @@ BEGIN
     SET createdDate = CURDATE();
     SET standardPrice = price * (RAND() * (max_percent - min_percent) + min_percent) / 100;
 
-    SELECT COALESCE(MAX(product_id), 0) + 1 INTO newest_product_id
-    FROM production_product;
-
-    INSERT INTO production_product (product_id, name, brand_id, category_id, standardPrice, price, createdDate)
-    VALUES (newest_product_id, name, brand_id, category_id, standardPrice, price, createdDate);
+    INSERT INTO production_product (name, brand_id, category_id, standardPrice, price, createdDate)
+    VALUES (name, brand_id, category_id, standardPrice, price, createdDate);
 END;
 
 
@@ -377,16 +346,12 @@ END;
 
 CREATE PROCEDURE insert_sales_order(IN orderDate DATE, IN isOnline TINYINT(1), IN customer_id INT, IN employee_id INT, IN store_id INT, IN source_online_id INT)
 BEGIN
-    DECLARE newest_order_id INT;
     DECLARE createdDate DATE;
 
     SET createdDate = CURDATE();
 
-    SELECT COALESCE(MAX(order_id), 0) + 1 INTO newest_order_id
-    FROM sales_order;
-
-    INSERT INTO sales_order (order_id, orderDate, isOnline, customer_id, employee_id, store_id, source_online_id, createdDate)
-    VALUES (newest_order_id, orderDate, isOnline, customer_id, employee_id, store_id, source_online_id, createdDate);
+    INSERT INTO sales_order (orderDate, isOnline, customer_id, employee_id, store_id, source_online_id, createdDate)
+    VALUES (orderDate, isOnline, customer_id, employee_id, store_id, source_online_id, createdDate);
 END;
 
 
@@ -411,11 +376,15 @@ BEGIN
     END IF;
 
     WHILE i <= numOrders DO
-        SET dayBetween = DATEDIFF(toDate, fromDate);
-        SET dayRand = FLOOR(RAND() * dayBetween);
-        SET orderDate = DATE_ADD(fromDate, INTERVAL dayRand DAY);
-        SET isOnline = ROUND(RAND(), 0);
+        IF fromDate = toDate THEN
+            SET orderDate = fromDate;
+        ELSE
+            SET dayBetween = DATEDIFF(toDate, fromDate);
+            SET dayRand = FLOOR(RAND() * dayBetween);
+            SET orderDate = DATE_ADD(fromDate, INTERVAL dayRand DAY);
+        END IF;
 
+        SET isOnline = ROUND(RAND(), 0);
         SELECT customer_id INTO customer_id_ FROM sales_customer ORDER BY RAND() LIMIT 1;
 
         SELECT store_id INTO store_id_ FROM sales_store ORDER BY RAND() LIMIT 1;
@@ -438,18 +407,16 @@ END;
 CREATE PROCEDURE insert_sales_order_detail(IN order_id_ INT, IN product_id_ INT, IN quantity_ INT)
 BEGIN
     DECLARE i INT DEFAULT 1;
-    DECLARE newest_order_detail_id INT;
     DECLARE createdDate_ DATE;
     DECLARE product_price DECIMAL(15, 2);
     DECLARE total_price DECIMAL(15, 2);
 
-    SELECT COALESCE(MAX(order_detail_id), 0) + 1 INTO newest_order_detail_id FROM sales_order_detail;
     SELECT price INTO product_price FROM production_product WHERE product_id = product_id_;
     SET total_price = product_price * quantity_;
     SET createdDate_ = CURDATE();
 
-    INSERT INTO sales_order_detail (order_detail_id, product_id, quantity, price, total, order_id, createdDate)
-    VALUES (newest_order_detail_id, product_id_, quantity_, product_price, total_price, order_id_, createdDate_);
+    INSERT INTO sales_order_detail (product_id, quantity, price, total, order_id, createdDate)
+    VALUES (product_id_, quantity_, product_price, total_price, order_id_, createdDate_);
 END;
 
 CREATE PROCEDURE insert_sales_order_detail_data(
@@ -495,23 +462,23 @@ BEGIN
 END;
 
 
----- MAIN FUCNTION TO INITIAL DATABASE ----
+-- MAIN FUCNTION TO INITIAL DATABASE ----
 CREATE PROCEDURE insert_base_data()
 BEGIN
-    DECLARE numCity INT DEFAULT 5;
-    DECLARE numStore INT DEFAULT 10;
-    DECLARE numCustomer INT DEFAULT 10;
+    DECLARE numCity INT DEFAULT 7;
+    DECLARE numStore INT DEFAULT 55;
+    DECLARE numCustomer INT DEFAULT 100000;
     DECLARE numBrand INT DEFAULT 10;
     DECLARE numCategory INT DEFAULT 10;
-    DECLARE numProduct INT DEFAULT 30;
+    DECLARE numProduct INT DEFAULT 1200;
     DECLARE minPrice DECIMAL(15, 2) DEFAULT 10;
     DECLARE maxPrice DECIMAL(15, 2) DEFAULT 10000;
     DECLARE numSources INT DEFAULT 10;
-    DECLARE fromDate DATE DEFAULT '2010-01-01';
-    DECLARE toDate DATE DEFAULT '2021-12-31';
-    DECLARE numOrders INT DEFAULT 3;
+    DECLARE fromDate DATE DEFAULT '2020-01-01';
+    DECLARE toDate DATE DEFAULT '2024-10-02';
+    DECLARE numOrders INT DEFAULT 400000;
     DECLARE minDetail INT DEFAULT 1;
-    DECLARE maxDetail INT DEFAULT 3;
+    DECLARE maxDetail INT DEFAULT 5;
 
     CALL insert_sales_city_data(numCity);
     CALL insert_sales_source_online_data(numSources);
