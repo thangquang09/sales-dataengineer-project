@@ -546,10 +546,8 @@ BEGIN
 END;
 $$
 DELIMITER ;
-START TRANSACTION;
 
+START TRANSACTION;
 CALL insert_base_data();
 CALL update_total_order();
-
 COMMIT;
-
