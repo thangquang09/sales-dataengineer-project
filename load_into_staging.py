@@ -150,9 +150,9 @@ def load_data_to_psql(mysql_conn, psql_conn, EDR):
                     df['source_online_id'] = df['source_online_id'].astype('Int64')
 
                 # load data to PostgreSQL
-                df.to_csv(f"{schema}_{table}.csv", index=False)
+                df.to_csv(f"daily_csv/{schema}_{table}.csv", index=False)
                 cursor = psql_conn.cursor()
-                csv_path = os.path.join(CURRENT_DIR, f"{schema}_{table}.csv")
+                csv_path = os.path.join(CURRENT_DIR, f"daily_csv/{schema}_{table}.csv")
                 copy_command=f"COPY {schema}.{table} FROM '{csv_path}' DELIMITER ',' CSV HEADER"
                 cursor.execute(copy_command)
                 psql_conn.commit()
