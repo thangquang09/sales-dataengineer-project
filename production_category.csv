@@ -1,0 +1,11 @@
+category_id,name,createdDATE,updatedDATE,insertDate,updateDate,sourceSystem,isProcessed,batchId
+1,Category 1,2024-10-03,,2024-10-04,2024-10-04,MySQL,0,
+2,Category 2,2024-10-03,,2024-10-04,2024-10-04,MySQL,0,
+3,Category 3,2024-10-03,,2024-10-04,2024-10-04,MySQL,0,
+4,Category 4,2024-10-03,,2024-10-04,2024-10-04,MySQL,0,
+5,Category 5,2024-10-03,,2024-10-04,2024-10-04,MySQL,0,
+6,Category 6,2024-10-03,,2024-10-04,2024-10-04,MySQL,0,
+7,Category 7,2024-10-03,,2024-10-04,2024-10-04,MySQL,0,
+8,Category 8,2024-10-03,,2024-10-04,2024-10-04,MySQL,0,
+9,Category 9,2024-10-03,,2024-10-04,2024-10-04,MySQL,0,
+10,Category 10,2024-10-03,,2024-10-04,2024-10-04,MySQL,0,

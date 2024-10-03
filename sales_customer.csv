@@ -1,0 +1,5 @@
+customer_id,name,email,phone,createdDate,updatedDate,insertDate,updateDate,sourceSystem,isProcessed,batchId
+30053,Customer 30053,customer30053@example.com,,2024-10-04,,2024-10-04,2024-10-04,MySQL,0,
+30054,Customer 30054,customer30054@example.com,,2024-10-04,,2024-10-04,2024-10-04,MySQL,0,
+30055,Customer 30055,customer30055@example.com,,2024-10-04,,2024-10-04,2024-10-04,MySQL,0,
+30056,Customer 30056,customer30056@example.com,,2024-10-04,,2024-10-04,2024-10-04,MySQL,0,
