@@ -1,7 +1,5 @@
-CREATE DATABASE sales_dw_staging;
-
-USE sales_dw_staging;
-
+-- Make sure you created sales_dw_staging database and use it to run this script
+-- RDBMS: PostgreSQL
 CREATE SCHEMA production;
 CREATE SCHEMA sales;
 
