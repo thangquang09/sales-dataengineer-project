@@ -21,7 +21,7 @@ conn = connect_to_mysql(mysql_config)
 cursor = conn.cursor()
 try:
     print("Generating data...")
-    cursor.execute('CALL generate_daily_data(15, 30, 500, 1000);')
+    cursor.execute(f'CALL generate_daily_data(8, 17, 300, 600)')
     conn.commit()
     cursor.close()
     conn.close()

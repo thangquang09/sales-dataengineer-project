@@ -2,9 +2,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
 from urllib.parse import quote_plus
-from sqlalchemy import Table, MetaData
-from sqlalchemy.dialects.postgresql import insert as pg_insert
 from datetime import datetime
+from function_for_ETL import upsert_data
 import os
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -43,27 +42,15 @@ EDR = {
     ]
 }
 
-def upsert_data(engine, session, table_name, schema, data_list, conflict_column):
-    metadata = MetaData()
-    table = Table(table_name, metadata, autoload_with=engine, schema=schema)
-
-    # Tạo statement cho insert
-    stmt = pg_insert(table).values(data_list)
-    update_dict = {c.name: c for c in stmt.excluded if c.name != conflict_column}
-
-    upsert_stmt = stmt.on_conflict_do_update(
-        index_elements=[conflict_column],
-        set_=update_dict
-    )
-    
-    # excute upsert statement
-    session.execute(upsert_stmt)
-
-def load_data_to_staging(schema, table, mysql_session, postgress_session):
+def load_data_to_staging(schema, table, mysql_session, postgress_session, batch_size=10000):
     mysql_columns = [col[0].lower() for col in mysql_session.execute(text(f'SHOW COLUMNS FROM {schema}_{table}')).fetchall()]
     mysql_columns.remove('checkstatus')
     mysql_data = mysql_session.execute(text(f'SELECT * FROM {schema}_{table} WHERE checkStatus != 1')).fetchall()
-    
+
+    if not mysql_data:
+        print(f'{schema}_{table} is up to date')
+        return
+
     new_columns = ['insertdate', 'updatedate', 'sourcesystem', 'isprocessed']
     default_values = [datetime.now().strftime('%Y-%m-%d'), None, 'MySQL', False]
     mysql_columns.extend(new_columns)
@@ -99,9 +86,13 @@ except Exception as e:
     exit(1)
 
 batch_size = 10000  # the batch size for upserting data
+print('Start loading data to staging...')
+print('Batch size:', batch_size)
+print('----------------------------------')
 for schema in EDR.keys():
     for table in EDR[schema]:
-        load_data_to_staging(schema, table, mysql_session, postgress_session)
+        print(f'Loading {schema}_{table} to staging...')
+        load_data_to_staging(schema, table, mysql_session, postgress_session, batch_size)
         
 postgress_session.commit()
 mysql_session.close()
