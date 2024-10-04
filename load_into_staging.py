@@ -63,10 +63,7 @@ def load_data_to_staging(schema, table, mysql_session, postgress_session):
     mysql_columns = [col[0].lower() for col in mysql_session.execute(text(f'SHOW COLUMNS FROM {schema}_{table}')).fetchall()]
     mysql_columns.remove('checkstatus')
     mysql_data = mysql_session.execute(text(f'SELECT * FROM {schema}_{table} WHERE checkStatus != 1')).fetchall()
-
-    metadata = MetaData()
-    postgres_table = Table(table, metadata, autoload_with=postgres_engine, schema=schema)
-
+    
     new_columns = ['insertdate', 'updatedate', 'sourcesystem', 'isprocessed']
     default_values = [datetime.now().strftime('%Y-%m-%d'), None, 'MySQL', False]
     mysql_columns.extend(new_columns)
