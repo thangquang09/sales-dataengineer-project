@@ -5,7 +5,6 @@ from datetime import datetime
 import os
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-os.environ['PGPASSWORD'] = '090924'
 # Config MySQL
 mysql_config = {
     'user': 'thangquang',

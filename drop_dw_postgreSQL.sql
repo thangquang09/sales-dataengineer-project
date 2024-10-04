@@ -1,0 +1,14 @@
+DROP TABLE Fact_Sales_Order;
+DROP TABLE Fact_Production;
+DROP TABLE Dim_Product;
+DROP TABLE Dim_Brand;
+DROP TABLE Dim_Category;
+DROP TABLE Dim_Date;
+DROP TABLE Dim_Month;
+DROP TABLE Dim_Quarter;
+DROP TABLE Dim_Year;
+DROP TABLE Dim_Source_Online;
+DROP TABLE Dim_Customer;
+DROP TABLE Dim_Employee;
+DROP TABLE Dim_Store;
+DROP TABLE Dim_City;
