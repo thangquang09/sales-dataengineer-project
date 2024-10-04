@@ -20,21 +20,24 @@ CREATE TABLE production_product (
     standardPrice DECIMAL(15, 2),
     price DECIMAL(15, 2) NOT NULL,
     createdDate DATE,
-    updatedDate DATE
+    updatedDate DATE,
+    checkStatus INT DEFAULT 0
 );
 
 CREATE TABLE production_brand (
     brand_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     createdDate DATE NOT NULL,
-    updatedDate DATE
+    updatedDate DATE,
+    checkStatus INT DEFAULT 0
 );
 
 CREATE TABLE production_category (
     category_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     createdDATE DATE NOT NULL,
-    updatedDATE DATE
+    updatedDATE DATE,
+    checkStatus INT DEFAULT 0
 );
 
 -- for sales schema
@@ -43,14 +46,16 @@ CREATE TABLE sales_store (
     name VARCHAR(255) NOT NULL,
     city_id INT NOT NULL,
     createdDate DATE NOT NULL,
-    updatedDate DATE
+    updatedDate DATE,
+    checkStatus INT DEFAULT 0
 );
 
 CREATE TABLE sales_city (
     city_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     createdDate DATE NOT NULL,
-    updatedDate DATE
+    updatedDate DATE,
+    checkStatus INT DEFAULT 0
 );
 
 CREATE TABLE sales_employee (
@@ -61,7 +66,8 @@ CREATE TABLE sales_employee (
     store_id INT,
     createdDate DATE NOT NULL,
     updatedDate DATE,
-    address VARCHAR(255)
+    address VARCHAR(255),
+    checkStatus INT DEFAULT 0
 );
 
 CREATE TABLE sales_customer (
@@ -70,7 +76,8 @@ CREATE TABLE sales_customer (
     email VARCHAR(50) NOT NULL,
     phone VARCHAR(20),
     createdDate DATE NOT NULL,
-    updatedDate DATE
+    updatedDate DATE,
+    checkStatus INT DEFAULT 0
 );
 
 CREATE TABLE sales_order (
@@ -85,7 +92,8 @@ CREATE TABLE sales_order (
     employee_id INT,
     store_id INT,
     createdDate DATE NOT NULL,
-    updatedDate DATE
+    updatedDate DATE,
+    checkStatus INT DEFAULT 0
 );
 
 CREATE TABLE sales_order_detail (
@@ -96,14 +104,16 @@ CREATE TABLE sales_order_detail (
     total DECIMAL(15, 2) DEFAULT 0,
     order_id INT,
     createdDate DATE NOT NULL,
-    updatedDate DATE
+    updatedDate DATE,
+    checkStatus INT DEFAULT 0
 );
 
 CREATE TABLE sales_source_online (
     source_online_id INT PRIMARY KEY AUTO_INCREMENT,
     link_name VARCHAR(255) NOT NULL,
     createdDATE DATE NOT NULL,
-    updatedDATE DATE
+    updatedDATE DATE,
+    checkStatus INT DEFAULT 0
 );
 
 -- add foreign key
