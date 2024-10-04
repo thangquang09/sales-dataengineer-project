@@ -4,19 +4,19 @@
 -- create Dim of sales first
 
 CREATE TABLE Dim_City (
-    city_id INT PRIMARY KEY,
+    city_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE Dim_Store (
-    store_id INT PRIMARY KEY,
+    store_id SERIAL PRIMARY KEY,
     name VARCHAR(255),
     city_id INT,
     CONSTRAINT store_fk_city FOREIGN KEY (city_id) REFERENCES Dim_City(city_id)
 );
 
 CREATE TABLE Dim_Employee (
-    employee_id INT PRIMARY KEY,
+    employee_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     dob DATE,
     identityNumber VARCHAR(20),
@@ -25,40 +25,42 @@ CREATE TABLE Dim_Employee (
 );
 
 CREATE TABLE Dim_Customer (
-    customer_id INT PRIMARY KEY,
+    customer_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE Dim_Source_Online (
-    source_online_id INT PRIMARY KEY,
+    source_online_id SERIAL PRIMARY KEY,
     link_name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE Dim_Year (
-    year_id INT PRIMARY KEY,
+    year_id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE Dim_Quarter (
-    quarter_id INT PRIMARY KEY,
+    quarter_id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL
 );
 
 
 CREATE TABLE Dim_Month (
-    month_id INT PRIMARY KEY,
+    month_id SERIAL PRIMARY KEY,
     year_id INT,
     quarter_id INT,
+    month INT,
     name VARCHAR(50) NOT NULL,
     CONSTRAINT month_fk_year FOREIGN KEY (year_id) REFERENCES Dim_Year(year_id),
     CONSTRAINT month_fk_quater FOREIGN KEY (quarter_id) REFERENCES Dim_Quarter(quarter_id)
 );
 
 CREATE TABLE Dim_Date (
-    date_id INT PRIMARY KEY,
+    date_id SERIAL PRIMARY KEY,
     month_id INT,
     year_id INT,
+    date_name DATE,
     CONSTRAINT date_fk_month FOREIGN KEY (month_id) REFERENCES Dim_Month(month_id),
     CONSTRAINT date_fk_year FOREIGN KEY (year_id) REFERENCES Dim_Year(year_id)
 );
@@ -67,7 +69,7 @@ CREATE TABLE Dim_Date (
 -- create Fact sales
 
 CREATE TABLE Fact_Sales_Order (
-    id INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     date_id INT NOT NULL,
     source_online_id INT NOT NULL,
     customer_id INT NOT NULL,
@@ -91,17 +93,17 @@ CREATE TABLE Fact_Sales_Order (
 -- Create Dim for Production
 
 CREATE TABLE Dim_Category (
-    category_id INT PRIMARY KEY,
+    category_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE Dim_Brand (
-    brand_id INT PRIMARY KEY,
+    brand_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE Dim_Product (
-    product_id INT PRIMARY KEY,
+    product_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description VARCHAR(255),
     size FLOAT,
@@ -117,7 +119,7 @@ CREATE TABLE Dim_Product (
 -- create Fact Production
 
 CREATE TABLE Fact_Production (
-    id INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     date_id INT NOT NULL,
     store_id INT NOT NULL,
     product_id INT NOT NULL,
