@@ -1,14 +1,18 @@
-import mysql.connector
-import psycopg2
-import pandas as pd
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import text
+from urllib.parse import quote_plus
+from sqlalchemy import Table, MetaData
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from datetime import datetime
 import os
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Config MySQL
 mysql_config = {
     'user': 'thangquang',
-    'password': 'Th@ngdeptrai147',
+    'password': quote_plus('Th@ngdeptrai147'),
     'host': 'localhost',
     'database': 'sales_db'
 }
@@ -24,9 +28,9 @@ psql_config = {
 
 EDR = {
     "production": [
-    "brand",
-    "category",
-    "product"
+        "brand",
+        "category",
+        "product"
     ],
     "sales": [
         "city",
@@ -39,138 +43,66 @@ EDR = {
     ]
 }
 
+def upsert_data(engine, session, table_name, schema, data_list, conflict_column):
+    metadata = MetaData()
+    table = Table(table_name, metadata, autoload_with=engine, schema=schema)
 
-def connect_to_mysql(config):
-    try:
-        conn = mysql.connector.connect(**config)
-        print('Connected to MySQL successfully')
-        return conn
-    except Exception as e:
-        print(f'Error connecting to MySQL: {e}')
-        return None
+    # Tạo statement cho insert
+    stmt = pg_insert(table).values(data_list)
+    update_dict = {c.name: c for c in stmt.excluded if c.name != conflict_column}
 
-def connect_to_psql(config):
-    try:
-        conn = psycopg2.connect(**config)
-        print('Connected to PostgreSQL successfully')
-        return conn
-    except Exception as e:
-        print(f'Error connecting to PostgreSQL: {e}')
-        return None
+    upsert_stmt = stmt.on_conflict_do_update(
+        index_elements=[conflict_column],
+        set_=update_dict
+    )
+    
+    # excute upsert statement
+    session.execute(upsert_stmt)
 
-def get_id_column_mysql(table_name, conn):
-    try:
-        cursor = conn.cursor()
-        query = f"""
-        SELECT COLUMN_NAME 
-        FROM information_schema.COLUMNS 
-        WHERE TABLE_SCHEMA = '{mysql_config['database']}' 
-        AND TABLE_NAME = '{table_name}' 
-        AND COLUMN_KEY = 'PRI'
-        """
-        cursor.execute(query)
-        id_column = cursor.fetchone()[0]
-        return id_column
-    except Exception as e:
-        print(f"Error when get ID from MySQL: {e}")
-        return None
+# Connect to MySQL and PostgreSQL
+try:
+    mysql_engine = create_engine(f'mysql+mysqlconnector://{mysql_config["user"]}:{mysql_config["password"]}@{mysql_config["host"]}/{mysql_config["database"]}')
+    postgres_engine = create_engine(f'postgresql+psycopg2://{psql_config["user"]}:{psql_config["password"]}@{psql_config["host"]}:{psql_config["port"]}/{psql_config["database"]}')
+    mysql_session = sessionmaker(bind=mysql_engine)()
+    postgress_session = sessionmaker(bind=postgres_engine)()
+    print('Connected to MySQL and PostgreSQL successfully')
+except Exception as e:
+    print(f'Error connecting to database: {e}')
+    exit(1)
 
-def get_id_column_postgres(table_name, conn):
-    try:
-        cursor = conn.cursor()
-        query = f"""
-        SELECT column_name 
-        FROM information_schema.key_column_usage 
-        WHERE table_name = '{table_name}' 
-        AND constraint_name LIKE '%pkey'
-        """
-        cursor.execute(query)
-        id_column = cursor.fetchone()[0]
-        return id_column
-    except Exception as e:
-        print(f"Error when get ID from PostgreSQL: {e}")
-        return None
+batch_size = 1000  # the batch size for upserting data
+for schema in EDR.keys():
+    for table in EDR[schema]:
+        mysql_columns = [col[0].lower() for col in 
+            mysql_session.execute(text(f'SHOW COLUMNS FROM {schema}_{table}')).fetchall()]
+        mysql_columns.remove('checkstatus')
+        mysql_data = mysql_session.execute(text(f'SELECT * FROM {schema}_{table} WHERE checkStatus != 1')).fetchall()
 
-def get_newest_id(rdbms, conn, table_name, schema=None):
-    try:
-        if rdbms == 'mysql':
-            id_column = get_id_column_mysql(f"{schema}_{table_name}", conn)
-            cursor = conn.cursor()
-            query = f"SELECT COALESCE(MAX({id_column}), 0) FROM {schema}_{table_name}"
-        elif rdbms == 'psql':
-            id_column = get_id_column_postgres(table_name, conn)
-            cursor = conn.cursor()
-            query = f"SELECT COALESCE(MAX({id_column}), 0) FROM {schema}.{table_name}"
-        cursor.execute(query)
-        newest_id = cursor.fetchone()[0]
-        cursor.close()
-        return newest_id
-    except Exception as e:
-        print(f"Error when get newest ID: {e}")
-        return None
+        metadata = MetaData()
+        postgres_table = Table(table, metadata, autoload_with=postgres_engine, schema=schema)
 
-def fetch_data_from_mysql(conn, query):
-    try:
-        cursor = conn.cursor()
-        cursor.execute(query)
-        data = cursor.fetchall()
-        columns = [i[0] for i in cursor.description]
-        df = pd.DataFrame(data, columns=columns)
-        return df
-    except Exception as e:
-        print(f"Errow when fetch data from mysql: {e}")
-        return None
+        new_columns = ['insertdate', 'updatedate', 'sourcesystem', 'isprocessed']
+        default_values = [datetime.now().strftime('%Y-%m-%d'), None, 'MySQL', False]
+        mysql_columns.extend(new_columns)
 
-def load_data_to_psql(mysql_conn, psql_conn, EDR):
-    try:
-        for schema in EDR.keys():
-            for table in EDR[schema]:
-                mysql_table = f"{schema}_{table}"
-                mysql_id = get_id_column_mysql(mysql_table, mysql_conn)
-                mysql_max_id = get_newest_id('mysql', mysql_conn, table, schema)
-                psql_id = get_id_column_postgres(table, psql_conn)
-                psql_max_id = get_newest_id('psql', psql_conn, table, schema)
-                if mysql_max_id == psql_max_id:
-                    print(f"Data in {schema}.{table} is up-to-date")
-                    continue
-                # take data from MySQL where id > psql_max_id
-                query = f"SELECT * FROM {mysql_table} WHERE {mysql_id} > {psql_max_id}"
-                df = fetch_data_from_mysql(mysql_conn, query)
+        data_to_upsert = []
+        for row in mysql_data:
+            row_with_default = list(row[:-1]) + default_values # remove checkStatus
+            full_data = dict(zip(mysql_columns, row_with_default))  
+            data_to_upsert.append(full_data)
 
-                # handle control columns
-                df['insertDate'] = datetime.today().strftime("%Y-%m-%d")
-                df['updateDate'] = datetime.today().strftime("%Y-%m-%d")
-                df['sourceSystem'] = 'MySQL'
-                df['isProcessed'] = 0
-
-                if schema == 'sales' and table == 'order':
-                    # astype to int if not null
-                    df['source_online_id'] = df['source_online_id'].astype('Int64')
-
-                # load data to PostgreSQL
-                df.to_csv(f"daily_csv/{schema}_{table}.csv", index=False)
-                cursor = psql_conn.cursor()
-                csv_path = os.path.join(CURRENT_DIR, f"daily_csv/{schema}_{table}.csv")
-                copy_command=f"COPY {schema}.{table} FROM '{csv_path}' DELIMITER ',' CSV HEADER"
-                cursor.execute(copy_command)
-                psql_conn.commit()
-                cursor.close()
-                print(f"Data from {mysql_table} loaded to {schema}.{table} successfully")
-    except Exception as e:
-        print(f"Error when load data to PostgreSQL: {e}")
-
-
-mysql_conn = connect_to_mysql(mysql_config)
-psql_conn = connect_to_psql(psql_config)
-
-
-load_data_to_psql(mysql_conn, psql_conn, EDR)
-
-
-if mysql_conn is not None:
-    mysql_conn.close()
-    print("MySQL connection closed.")
-
-if psql_conn is not None:
-    psql_conn.close()
-    print("PostgreSQL connection closed.")
+            # call upsert_data when data_to_upsert has enough
+            if len(data_to_upsert) >= batch_size:
+                upsert_data(postgres_engine, postgress_session, table, schema, data_to_upsert, mysql_columns[0])
+                data_to_upsert = []  # Reset list to upsert
+        # insert the remaining data
+        if data_to_upsert:
+            upsert_data(postgres_engine, postgress_session, table, schema, data_to_upsert, mysql_columns[0])
+        print(f'Upserted {len(mysql_data)} records from {schema}_{table} to {schema}_{table} in PostgreSQL')
+        update_status_mysql = text(f'UPDATE {schema}_{table} SET checkStatus = 1 WHERE checkStatus != 1')
+        mysql_session.execute(update_status_mysql)
+        mysql_session.commit()
+        print(f'Updated checkStatus for {schema}_{table} in MySQL')
+postgress_session.commit()
+mysql_session.close()
+postgress_session.close()
