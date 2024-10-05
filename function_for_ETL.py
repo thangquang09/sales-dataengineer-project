@@ -260,22 +260,6 @@ def load_fact_sales_order(staging, dw):
     dw_engine, dw_session = dw
     table_in = 'sales.order'
     table_out = 'fact_sales_order'
-    columns = [
-        'id',
-        'date_id',
-        'source_online_id',
-        'customer_id',
-        'employee_id',
-        'store_id',
-        'revenue',
-        'revenue_online',
-        'revenue_offline',
-        'standardcost',
-        'profit',
-        'number_order',
-        'number_order_online',
-        'number_order_offline'
-    ]
     with open("load_fact_sales.sql", 'r') as f:
         query = text(f.read())
     df = pd.read_sql(query, staging_engine)
@@ -285,15 +269,9 @@ def load_fact_sales_order(staging, dw):
     dimdate = pd.read_sql(text("SELECT date_id, date_name FROM dim_date"), dw_engine)
     date_mapping = dimdate.set_index('date_name')['date_id'].to_dict()
     df['date_id'] = df['orderdate'].map(date_mapping)
-    df.rename(columns={'order_id': 'id'}, inplace = True)
-    columns_to_drop = [col for col in df.columns if col not in columns]
-    df.drop(columns = columns_to_drop, inplace = True)
-
+    df.drop('orderdate', inplace=True, axis=1)
     df.fillna({'source_online_id':1000}, inplace=True)
-
-    conflict_column = columns[0]
-    data_list = df.to_dict('records')
-    load_with_batch(dw_engine, dw_session, table_out, data_list=data_list, conflict_column=conflict_column, batch_size=10000)
+    df.to_sql(table_out, dw_engine, if_exists='append', index=false)
     update_isprocessed(staging_session, table_in)
     print(f"Upserted {len(df)} records from {table_in} to {table_out} in PostgreSQL")
 
