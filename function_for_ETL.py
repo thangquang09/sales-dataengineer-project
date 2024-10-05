@@ -296,3 +296,20 @@ def load_fact_sales_order(staging, dw):
     load_with_batch(dw_engine, dw_session, table_out, data_list=data_list, conflict_column=conflict_column, batch_size=10000)
     update_isprocessed(staging_session, table_in)
     print(f"Upserted {len(df)} records from {table_in} to {table_out} in PostgreSQL")
+
+def load_dim_brand(staging, dw):
+    staging_engine, staging_session = staging
+    dw_engine, dw_session = dw
+    table_in = 'production.brand'
+    table_out = 'dim_brand'
+    columns = ",".join(["brand_id", "name"])
+    query = text(f"SELECT {columns} FROM {table_in} WHERE isprocessed = false")
+    staging_df = pd.read_sql(query, staging_engine)
+    if staging_df.empty:
+        print(f"{table_out} is up to date")
+        return
+    conflict_column = staging_df.columns[0]
+    data_list = staging_df.to_dict('records')
+    load_with_batch(dw_engine, dw_session, table_out, data_list=data_list, conflict_column=conflict_column)
+    update_isprocessed(staging_session, table_in)
+    print(f"Upserted {len(staging_df)} records from {table_in} to {table_out} in PostgreSQL")
