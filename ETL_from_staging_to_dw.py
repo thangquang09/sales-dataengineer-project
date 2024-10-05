@@ -37,25 +37,38 @@ dw_engine = createEngine(dw_config)
 staging_session = sessionmaker(bind=staging_engine)()
 dw_session = sessionmaker(bind=dw_engine)()
 
-load_dim_city((staging_engine, staging_session), (dw_engine, dw_session))
+staging_connect = (staging_engine, staging_session)
+dw_connect = (dw_engine, dw_session)
 
-load_dim_store((staging_engine, staging_session), (dw_engine, dw_session))
+## FOR SALES SCHEMA
+load_dim_city(staging_connect, dw_connect)
 
-load_dim_employee((staging_engine, staging_session), (dw_engine, dw_session))
+load_dim_store(staging_connect, dw_connect)
 
-load_dim_source_online((staging_engine, staging_session), (dw_engine, dw_session))
+load_dim_employee(staging_connect, dw_connect)
 
-load_dim_customer((staging_engine, staging_session), (dw_engine, dw_session))
+load_dim_source_online(staging_connect, dw_connect)
 
-load_dim_year((staging_engine, staging_session), (dw_engine, dw_session))
+load_dim_customer(staging_connect, dw_connect)
+
+load_dim_year(staging_connect, dw_connect)
 
 load_dim_quarter((dw_engine, dw_session))
 
-load_dim_month((staging_engine, staging_session), (dw_engine, dw_session))
+load_dim_month(staging_connect, dw_connect)
 
-load_dim_date((staging_engine, staging_session), (dw_engine, dw_session))
+load_dim_date(staging_connect, dw_connect)
 
-load_fact_sales_order((staging_engine, staging_session), (dw_engine, dw_session))
+load_fact_sales_order(staging_connect, dw_connect)
+
+# FOR PRODUCTION SCHEMA
+
+load_dim_brand(staging_connect, dw_connect)
+
+load_dim_category(staging_connect, dw_connect)
+
+load_dim_product(staging_connect, dw_connect)
+
 
 staging_session.close()
 dw_session.close()
