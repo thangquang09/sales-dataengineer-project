@@ -149,16 +149,3 @@ CREATE TABLE sales.source_online (
     sourceSystem VARCHAR(50) DEFAULT 'MySQL',
     isProcessed BOOLEAN DEFAULT FALSE
 );
-
--- Thêm các ràng buộc khóa ngoại
-
-ALTER TABLE production.product ADD CONSTRAINT fk_brand FOREIGN KEY (brand_id) REFERENCES production.brand(brand_id);
-ALTER TABLE production.product ADD CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES production.category(category_id);
-ALTER TABLE sales.store ADD CONSTRAINT fk_city FOREIGN KEY (city_id) REFERENCES sales.city(city_id);
-ALTER TABLE sales.employee ADD CONSTRAINT fk_store FOREIGN KEY (store_id) REFERENCES sales.store(store_id);
-ALTER TABLE sales.order ADD CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES sales.customer(customer_id);
-ALTER TABLE sales.order ADD CONSTRAINT fk_employee FOREIGN KEY (employee_id) REFERENCES sales.employee(employee_id);
-ALTER TABLE sales.order ADD CONSTRAINT fk_store_order FOREIGN KEY (store_id) REFERENCES sales.store(store_id);
-ALTER TABLE sales.order ADD CONSTRAINT fk_source_online FOREIGN KEY (source_online_id) REFERENCES sales.source_online(source_online_id);
-ALTER TABLE sales.order_detail ADD CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES sales.order(order_id);
-ALTER TABLE sales.order_detail ADD CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES production.product(product_id);

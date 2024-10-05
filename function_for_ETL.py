@@ -54,7 +54,6 @@ def load_with_batch(engine, session, table_name, schema='public', data_list=None
     for i in range(0, len(data_list), batch_size):
         data = data_list[i: i + batch_size]
         upsert_data(engine, session, table_name, schema, data, conflict_column)
-    session.commit()
 
 
 def load_dim_city(staging, dw):

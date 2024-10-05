@@ -1,3 +1,5 @@
+USE sales_db;
+
 UPDATE production_product SET checkStatus = 0;
 UPDATE production_category SET checkStatus = 0;
 UPDATE production_brand SET checkStatus = 0;
