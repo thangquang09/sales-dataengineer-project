@@ -1,4 +1,6 @@
 from sqlalchemy import text
+from sqlalchemy.orm import sessionmaker
+from function_for_ETL import *
 
 def generate_data(mysql_session, min_cus, max_cus, min_order, max_order):
     print("Generating data")
@@ -9,3 +11,9 @@ def generate_data(mysql_session, min_cus, max_cus, min_order, max_order):
     print("Generated data successfully")
     print('----------------------------------')
     
+if __name__ == '__main__':
+    mysql_config = get_config('mysql_conf.txt')
+    mysql_engine = get_engine(mysql_config, 'mysql')
+    mysql_session = sessionmaker(bind=mysql_engine)()
+    generate_data(mysql_session, 10, 30, 300, 400)
+    mysql_session.close()

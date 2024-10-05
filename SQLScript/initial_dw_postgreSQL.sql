@@ -180,7 +180,7 @@ GROUP BY
 	c.customer_id,
 	c.name;
 
-CREATE VIEW view_quantity_cate_store_city AS
+CREATE MATERIALIZED VIEW view_quantity_cate_store_city AS
 SELECT
     fp.product_id,
     p.name as product_name,
@@ -207,7 +207,7 @@ GROUP BY
 	city.city_id,
 	city.name;
 
-CREATE VIEW view_online_offline_summary AS 
+CREATE MATERIALIZED VIEW view_online_offline_summary AS 
 SELECT
 	d.date_id,
 	m.month_id,
