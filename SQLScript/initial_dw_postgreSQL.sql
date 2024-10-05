@@ -144,7 +144,7 @@ INSERT INTO Dim_Source_Online(source_online_id, link_name) VALUES (1000, 'offlin
 -- Top 10 best-selling and worst-selling products
 -- Top 10 employees and stores with the highest and lowest revenue.
 
-CREATE VIEW view_sales_summary AS
+CREATE MATERIALIZED VIEW view_sales_summary AS
 SELECT
 	p.product_id,
 	p.name as product_name,
@@ -182,6 +182,8 @@ GROUP BY
 
 CREATE VIEW view_quantity_cate_store_city AS
 SELECT
+    fp.product_id,
+    p.name as product_name,
 	cate.category_id,
 	cate.name as category_name,
 	s.store_id,
@@ -196,6 +198,8 @@ FROM
 	JOIN dim_store s ON s.store_id = fp.store_id
 	JOIN dim_city city ON s.city_id = city.city_id
 GROUP BY
+	fp.product_id,
+	p.name,
 	cate.category_id,
 	cate.name,
 	s.store_id,
