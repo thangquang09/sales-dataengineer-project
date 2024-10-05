@@ -1,5 +1,7 @@
 # SALES DATA ENGINNER PROJECT
 
+![Background](image/background.png)
+
 ## Introduction
 
 This is my Data Engineer Project on sales data. In this project, I designed a MySQL database to store daily transaction data and a two-layer Data Warehouse using PostgreSQL, consisting of a Staging layer and a Data Warehouse layer. In the Data Warehouse, I created VIEWS to meet the requirements that will be listed later, allowing the construction of dashboards to display these requirements. The tool I used for ETL is Python, and I scheduled periodic data loads into the Data Warehouse using Apache Airflow.
