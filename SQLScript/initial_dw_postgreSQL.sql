@@ -144,10 +144,8 @@ INSERT INTO Dim_Source_Online(source_online_id, link_name) VALUES (1000, 'offlin
 -- Top 10 best-selling and worst-selling products
 -- Top 10 employees and stores with the highest and lowest revenue.
 
-CREATE MATERIALIZED VIEW view_sales_summary AS
+CREATE MATERIALIZED VIEW view_store_city_employee_cus AS
 SELECT
-	p.product_id,
-	p.name as product_name,
 	s.store_id,
 	s.name as store_name,
 	e.employee_id,
@@ -162,15 +160,11 @@ SELECT
 	AVG(fo.revenue) as average_value
 FROM
 	fact_sales_order fo
-	JOIN fact_production fp ON fo.date_id = fp.date_id
-	JOIN dim_product p ON fp.product_id = p.product_id
 	JOIN dim_store s ON fo.store_id = s.store_id
 	JOIN dim_city city ON s.city_id = city.city_id
 	JOIN dim_employee e ON fo.employee_id = e.employee_id
 	JOIN dim_customer c ON fo.customer_id = c.customer_id
 GROUP BY
-	p.product_id,
-	p.name,
 	s.store_id,
 	s.name,
 	e.employee_id,
@@ -190,7 +184,8 @@ SELECT
 	s.name as store_name,
 	city.city_id,
 	city.name as city_name,
-	SUM(fp.quantity) as quantity
+	SUM(fp.quantity) as quantity,
+    SUM(fp.revenue) as revenue
 FROM
 	fact_production fp
 	JOIN dim_product p ON fp.product_id = p.product_id

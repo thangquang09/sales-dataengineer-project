@@ -40,9 +40,20 @@ The schema of data warehouse layer is in picture below:
 
 ![Star Schema](image/star_schema.png)
 
-This DW has 3 materialized views to support creating dashboard `view_sales_summary`, `view_quantity_cate_store_city`, `view_online_offline_summary`.
+This DW has 3 materialized views to support creating dashboard `view_store_city_employee_cus`, `view_quantity_cate_store_city`, `view_online_offline_summary`.
 
 We will have some insight:
+
+- Revenue, prodit, number of orders, average value of employee:
+![employee](image/revenue_employee.png)
+- Quantity of products sold by store
+![store](image/quantity_store.png)
+- For online orders, the structure of order numbers and revenue by source ("Tiki", "Shopee", etc.)
+![online offline](image/revenue_on_off.png)
+- Top 10 best-selling products
+![top 10 best](image/top_10best.png)
+- Top 10 worst-selling products
+![top 10 worst](image/top_10worst.png)
 
 ## How to run?
 
