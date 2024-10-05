@@ -320,6 +320,7 @@ def load_dim_product(staging, dw):
     data_list = df.to_dict('records')
 
     load_with_batch(dw_engine, dw_session, table_out, data_list=data_list, conflict_column=conflict_column, batch_size=10000)
+    update_isprocessed(staging_session, table_in)
     print(f"Upserted {len(df)} records from {table_in} to {table_out} in PostgreSQL")
 
 def load_fact_sales_order(staging, dw):
@@ -345,6 +346,7 @@ def load_fact_sales_order(staging, dw):
 def load_fact_production(staging, dw):
     staging_engine, staging_session = staging
     dw_engine, dw_session = dw
+    table_in = 'sales.order'
     table_out = 'fact_production'
 
     with open("/home/thangquang/Documents/CODE/sales-dataengineer-project/load_fact_production.sql", "r") as f:
@@ -352,6 +354,7 @@ def load_fact_production(staging, dw):
     df = pd.read_sql(query, staging_engine)
     if df.empty:
         print(f"{table_out} is up to date")
+        return
         
     dimdate = pd.read_sql(text("SELECT date_id, date_name FROM dim_date"), dw_engine)
     date_mapping = dimdate.set_index('date_name')['date_id'].to_dict()
@@ -359,3 +362,4 @@ def load_fact_production(staging, dw):
     df.drop('orderdate', inplace=True, axis=1)
     df.to_sql(table_out, dw_engine, if_exists='append', index=false)
     print(f"Inserted {len(df)} records to {table_out} in PostgreSQL")
+    update_isprocessed(session=staging_session, table_name=table_in)

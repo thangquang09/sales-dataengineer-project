@@ -10,4 +10,6 @@ SELECT
     SUM(CASE WHEN isOnline = false THEN 0 ELSE 1 END) AS number_order_offline
 FROM 
     sales.order
+WHERE
+    isProcessed = false
 GROUP BY store_id, employee_id, customer_id, orderdate, source_online_id;
