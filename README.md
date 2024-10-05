@@ -62,5 +62,5 @@ We will have some insight:
    ```bash
    python3 ETL_pipeline.py
    ```
-7. If you want to use Airflow to run it periodically, you have to install airflow and move project to your airflow DAG directory, then it will be ok.
+7. If you want to use Airflow to run it periodically, you have to install airflow and move project to your airflow DAG directory, the main dag is [airflow_dag.py](airflow_dag.py), then it will be ok.
 
