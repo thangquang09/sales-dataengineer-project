@@ -19,6 +19,15 @@ def get_config(path_file):
         config = eval(f.read())
     return quote_config_value(config)
 
+def get_engine(config, rdbms):
+    if rdbms == 'mysql':
+        return create_engine(f'mysql+mysqlconnector://{config["user"]}:{config["password"]}@{config["host"]}/{config["database"]}')
+    elif rdbms == 'postgresql':
+        return create_engine(f'postgresql+psycopg2://{config["user"]}:{config["password"]}@{config["host"]}:{config["port"]}/{config["database"]}')
+    else:
+        print('Invalid RDBMS')
+        return None
+
 def generate_date(min_year, max_year):
     month = random.randint(1, 12)
     day = random.randint(1, 28)
@@ -386,6 +395,20 @@ def truncate_staging(staging_session, path_file='SQLScript/truncate_staging.sql'
     staging_session.execute(query)
     staging_session.commit()
     print('Truncated staging successfully')
+    print('----------------------------------')
+
+def refresh_view(dw_session):
+    print('Refreshing view in DataWarehouse...')
+    query = text("SELECT matviewname FROM pg_matviews;")
+    view_names = [row[0] for row in dw_session.execute(query)]
+    
+    for view_name in view_names:
+        print(f'Refreshing {view_name}...')
+        refresh_query = text(f"REFRESH MATERIALIZED VIEW {view_name};")
+        # print(refresh_query)
+        dw_session.execute(refresh_query)
+        dw_session.commit()
+        print(f'{view_name} refreshed successfully')
     print('----------------------------------')
 
 if __name__ == "__main__":
