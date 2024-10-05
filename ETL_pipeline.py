@@ -23,16 +23,16 @@ if __name__ == '__main__':
         dw_session = sessionmaker(bind=dw_engine)()
         print('Connected to MySQL, PostgreSQL and DataWarehouse successfully')
     # ---- generating data in mysql ----
-    #     generate_data(mysql_session, 10, 30, 300, 400)
+        generate_data(mysql_session, 10, 30, 300, 400)
         
     # # ---- load from mysql to postgresql staging ----
-    #     load_to_staging(EDR, mysql_engine, mysql_session, staging_engine, staging_session)
+        load_to_staging(EDR, mysql_engine, mysql_session, staging_engine, staging_session)
 
     # # ---- load from staging to dw ----
-    #     load_to_dw(staging_engine, staging_session, dw_engine, dw_session)
+        load_to_dw(staging_engine, staging_session, dw_engine, dw_session)
 
     # # ---- truncate data in staging ----
-    #     truncate_staging(staging_session)
+        truncate_staging(staging_session)
     
     # ---- refresh view in dw ----
 
