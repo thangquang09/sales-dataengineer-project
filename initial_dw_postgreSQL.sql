@@ -110,7 +110,7 @@ CREATE TABLE Dim_Product (
     color VARCHAR(50),
     brand_id INT,
     category_id INT,
-    standardCost DECIMAL(15,2),
+    standardPrice DECIMAL(15,2),
     price DECIMAL(15,2),
     CONSTRAINT product_fk_category FOREIGN KEY (category_id) REFERENCES Dim_Category(category_id),
     CONSTRAINT product_fk_brand FOREIGN KEY (brand_id) REFERENCES Dim_Brand(brand_id)
