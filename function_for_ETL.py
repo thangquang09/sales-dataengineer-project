@@ -60,6 +60,7 @@ def load_dim_city(staging, dw):
     data_list = df.to_dict('records')
     load_with_batch(dw_engine, dw_session, table_out, 'public', data_list, conflict_column=conflict_column)
     update_isprocessed(staging_session, table_in)
+    print(f'Upserted {len(df)} records from {table_in} to {table_out} in PostgreSQL')
 
 
 def load_dim_store(staging, dw):
@@ -77,6 +78,7 @@ def load_dim_store(staging, dw):
     data_list = df.to_dict('records')
     load_with_batch(dw_engine, dw_session, table_out, 'public', data_list, conflict_column=conflict_column)
     update_isprocessed(staging_session, table_in)
+    print(f'Upserted {len(df)} records from {table_in} to {table_out} in PostgreSQL')
 
 def load_dim_employee(staging, dw):
     staging_engine, staging_session = staging
@@ -98,6 +100,7 @@ def load_dim_employee(staging, dw):
     data_list = df.to_dict('records')
     load_with_batch(dw_engine, dw_session, table_out, 'public', data_list, conflict_column=conflict_column)
     update_isprocessed(staging_session, table_in)
+    print(f'Upserted {len(df)} records from {table_in} to {table_out} in PostgreSQL')
 
 
 def load_dim_customer(staging, dw):
@@ -116,6 +119,7 @@ def load_dim_customer(staging, dw):
     data_list = df.to_dict('records')
     load_with_batch(dw_engine, dw_session, table_out, 'public', data_list, conflict_column=conflict_column)
     update_isprocessed(staging_session, table_in)
+    print(f'Upserted {len(df)} records from {table_in} to {table_out} in PostgreSQL')
 
 def load_dim_source_online(staging, dw):
     staging_engine, staging_session = staging
@@ -132,6 +136,7 @@ def load_dim_source_online(staging, dw):
     data_list = df.to_dict('records')
     load_with_batch(dw_engine, dw_session, table_out, 'public', data_list, conflict_column=conflict_column)
     update_isprocessed(staging_session, table_in)
+    print(f'Upserted {len(df)} records from {table_in} to {table_out} in PostgreSQL')
 
 def load_dim_year(staging, dw):
     staging_engine, staging_session = staging
@@ -160,15 +165,21 @@ def load_dim_year(staging, dw):
         dw_session.execute(text(f"INSERT INTO public.{table_out} (name) VALUES ('{row.name}')"))
     dw_session.commit()
     # with year, no need to update isprocessed in staging, after load dim_date, it will be updated
+    print(f'Upserted {len(new_year)} records from {table_in} to {table_out} in PostgreSQL')
 
 
 def load_dim_quarter(dw):
     dw_engine, dw_session = dw
+    count = dw_session.execute(text(f'SELECT COUNT(*) FROM public.dim_quarter')).fetchone()[0]
+    if count == 4:
+        print('dim_quarter is up to date')
+        return
     quarter_name = ['Q1', 'Q2', 'Q3', 'Q4']
     for i in range(4):
         data = {'name': quarter_name[i]}
         dw_session.execute(text(f"INSERT INTO public.dim_quarter (name) VALUES ('{quarter_name[i]}')"))
     dw_session.commit()
+    print(f'Upserted 4 records to dim_quarter in PostgreSQL')
 
 def load_dim_month(staging, dw):
     staging_engine, staging_session = staging
@@ -206,6 +217,7 @@ def load_dim_month(staging, dw):
         dw_session.execute(text(f"INSERT INTO public.{table_out} (name, quarter_id, year_id, month) VALUES ('{row.name}', {row.quarter_id}, {row.year_id}, {row.month})"))
     dw_session.commit()
     # with month, no need to update isprocessed in staging, after load dim_date, it will be updated
+    print(f'Upserted {len(new_month)} records from {table_in} to {table_out} in PostgreSQL')
 
 def load_dim_date(staging, dw):
     staging_engine, staging_session = staging
@@ -241,5 +253,46 @@ def load_dim_date(staging, dw):
         data = {'date_name': row.orderdate, 'year_id': row.year_id, 'month_id': row.month_id}
         dw_session.execute(text(f"INSERT INTO public.{table_out} (date_name, year_id, month_id) VALUES ('{row.orderdate}', {row.year_id}, {row.month_id})"))
     dw_session.commit()
-    update_isprocessed(staging_session, table_in)
+    print(f'Upserted {len(new_date)} records from {table_in} to {table_out} in PostgreSQL')
 
+def load_fact_sales_order(staging, dw):
+    staging_engine, staging_session = staging
+    dw_engine, dw_session = dw
+    table_in = 'sales.order'
+    table_out = 'fact_sales_order'
+    columns = [
+        'id',
+        'date_id',
+        'source_online_id',
+        'customer_id',
+        'employee_id',
+        'store_id',
+        'revenue',
+        'revenue_online',
+        'revenue_offline',
+        'standardcost',
+        'profit',
+        'number_order',
+        'number_order_online',
+        'number_order_offline'
+    ]
+    with open("fact.sql", 'r') as f:
+        query = text(f.read())
+    df = pd.read_sql(query, staging_engine)
+    if df.empty:
+        print(f'{table_out} is up to date')
+        return
+    dimdate = pd.read_sql(text("SELECT date_id, date_name FROM dim_date"), dw_engine)
+    date_mapping = dimdate.set_index('date_name')['date_id'].to_dict()
+    df['date_id'] = df['orderdate'].map(date_mapping)
+    df.rename(columns={'order_id': 'id'}, inplace = True)
+    columns_to_drop = [col for col in df.columns if col not in columns]
+    df.drop(columns = columns_to_drop, inplace = True)
+
+    df.fillna({'source_online_id':1000}, inplace=True)
+
+    conflict_column = columns[0]
+    data_list = df.to_dict('records')
+    load_with_batch(dw_engine, dw_session, table_out, data_list=data_list, conflict_column=conflict_column, batch_size=10000)
+    update_isprocessed(staging_session, table_in)
+    print(f"Upserted {len(df)} records from {table_in} to {table_out} in PostgreSQL")

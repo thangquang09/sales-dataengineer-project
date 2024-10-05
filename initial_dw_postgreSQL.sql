@@ -71,7 +71,7 @@ CREATE TABLE Dim_Date (
 CREATE TABLE Fact_Sales_Order (
     id SERIAL PRIMARY KEY,
     date_id INT NOT NULL,
-    source_online_id INT NOT NULL,
+    source_online_id INT,
     customer_id INT NOT NULL,
     employee_id INT NOT NULL,
     store_id INT NOT NULL,
@@ -132,8 +132,7 @@ CREATE TABLE Fact_Production (
 
 
 
-
-
+INSERT INTO Dim_Source_Online(source_online_id, link_name) VALUES (1000, 'offline');
 
 
 
