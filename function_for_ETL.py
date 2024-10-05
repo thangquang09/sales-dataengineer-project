@@ -331,7 +331,7 @@ def load_dim_product(staging, dw):
     conflict_column = df.columns[0]
     data_list = df.to_dict('records')
 
-    load_with_batch(dw_engine, dw_session, table_out, data_list=data_list, conflict_column=conflict_column, batch_size=10000)
+    load_with_batch(dw_engine, dw_session, table_out, data_list=data_list, conflict_column=conflict_column)
     update_isprocessed(staging_session, table_in)
     print(f"Upserted {len(df)} records from {table_in} to {table_out} in PostgreSQL")
 
@@ -359,7 +359,8 @@ def load_fact_sales_order(staging, dw):
 def load_fact_production(staging, dw):
     staging_engine, staging_session = staging
     dw_engine, dw_session = dw
-    table_in = 'sales.order'
+    table_in1 = 'sales.order'
+    table_in2 = 'sales.order_detail'
     table_out = 'fact_production'
     link_to_fact = "SQLScript/load_fact_production.sql"
     with open(os.path.join(PROJECT_DIR, link_to_fact), 'r') as f:
@@ -375,7 +376,18 @@ def load_fact_production(staging, dw):
     df.drop('orderdate', inplace=True, axis=1)
     df.to_sql(table_out, dw_engine, if_exists='append', index=false)
     print(f"Inserted {len(df)} records to {table_out} in PostgreSQL")
-    update_isprocessed(session=staging_session, table_name=table_in)
+    update_isprocessed(session=staging_session, table_name=table_in1)
+    update_isprocessed(session=staging_session, table_name=table_in2)
+
+def truncate_staging(staging_session, path_file='SQLScript/truncate_staging.sql'):
+    with open(os.path.join(PROJECT_DIR, path_file), 'r') as f:
+        query = text(f.read())
+    print
+    print('Truncating staging...')
+    staging_session.execute(query)
+    staging_session.commit()
+    print('Truncated staging successfully')
+    print('----------------------------------')
 
 if __name__ == "__main__":
     pass

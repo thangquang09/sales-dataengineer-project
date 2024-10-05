@@ -30,6 +30,13 @@ try:
 
 # ---- load from staging to dw ----
     load_to_dw(staging_engine, staging_session, dw_engine, dw_session)
+
+# ---- truncate data in staging ----
+    truncate_staging(staging_session)
+    
+# ---- end ----
+    print('ETL pipeline completed')
+    print('----------------------------------')
 except Exception as e:
     print(f'Error: {e}')
     exit(1)

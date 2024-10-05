@@ -4,26 +4,6 @@ from sqlalchemy import text
 from urllib.parse import quote_plus
 from datetime import datetime
 from function_for_ETL import upsert_data
-import os
-
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# Config MySQL
-mysql_config = {
-    'user': 'thangquang',
-    'password': quote_plus('Th@ngdeptrai147'),
-    'host': 'localhost',
-    'database': 'sales_db'
-}
-
-# Config PostgreSQL
-psql_config = {
-    'user': 'postgres',
-    'password': '090924',
-    'host': 'localhost',
-    'database': 'sales_dw_staging',
-    'port': '5432'
-}
 
 EDR = {
     "production": [
@@ -103,13 +83,7 @@ if __name__ == '__main__':
         exit(1)
 
     batch_size = 10000  # the batch size for upserting data
-    print('Start loading data to staging...')
-    print('Batch size:', batch_size)
-    print('----------------------------------')
-    for schema in EDR.keys():
-        for table in EDR[schema]:
-            print(f'Loading {schema}_{table} to staging...')
-            load_table_to_staging(schema, table, mysql_session, postgress_session, batch_size)
+    load_to_staging(EDR, mysql_engine, mysql_session, postgres_engine, postgress_session, batch_size)
             
     postgress_session.commit()
     mysql_session.close()

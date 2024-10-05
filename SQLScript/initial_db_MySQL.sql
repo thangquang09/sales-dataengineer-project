@@ -608,6 +608,7 @@ END;
 $$
 DELIMITER ;
 
-
-CALL insert_base_data();
-CALL update_total_order();
+START TRANSACTION;
+    CALL insert_base_data();
+    CALL update_total_order();
+COMMIT;
