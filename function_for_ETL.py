@@ -276,7 +276,7 @@ def load_fact_sales_order(staging, dw):
         'number_order_online',
         'number_order_offline'
     ]
-    with open("fact.sql", 'r') as f:
+    with open("load_fact_sales.sql", 'r') as f:
         query = text(f.read())
     df = pd.read_sql(query, staging_engine)
     if df.empty:
