@@ -6,3 +6,6 @@ UPDATE sales.employee SET isprocessed = FALSE;
 UPDATE sales.order_detail SET isprocessed = FALSE;
 UPDATE sales.source_online SET isprocessed = FALSE;
 UPDATE sales.store SET isprocessed = FALSE;
+UPDATE production.brand SET isprocessed = FALSE;
+UPDATE production.category SET isprocessed = FALSE;
+UPDATE production.product SET isprocessed = FALSE;

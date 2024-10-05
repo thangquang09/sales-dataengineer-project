@@ -1,0 +1,6 @@
+{
+    'user': 'thangquang',
+    'password': 'Th@ngdeptrai147',
+    'host': 'localhost',
+    'database': 'sales_db'
+}

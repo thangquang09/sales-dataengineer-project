@@ -3,8 +3,21 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 import pandas as pd
 from datetime import datetime
 import random
+from urllib.parse import quote_plus
+import os
 
 month_name = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+PROJECT_DIR = ("/home/thangquang/Documents/CODE/sales-dataengineer-project")
+
+def quote_config_value(config):
+    for key, value in config.items():
+            config[key] = quote_plus(value)
+    return config
+
+def get_config(path_file):
+    with open(os.path.join(PROJECT_DIR, path_file), 'r') as f:
+        config = eval(f.read())
+    return quote_config_value(config)
 
 def generate_date(min_year, max_year):
     month = random.randint(1, 12)
@@ -22,7 +35,6 @@ def upsert_data(engine, session, table_name, schema='public', data_list=None, co
     metadata = MetaData()
     table = Table(table_name, metadata, autoload_with=engine, schema=schema)
 
-    # Tạo statement cho insert
     stmt = pg_insert(table).values(data_list)
     update_dict = {c.name: c for c in stmt.excluded if c.name != conflict_column}
 
@@ -328,7 +340,8 @@ def load_fact_sales_order(staging, dw):
     dw_engine, dw_session = dw
     table_in = 'sales.order'
     table_out = 'fact_sales_order'
-    with open("load_fact_sales.sql", 'r') as f:
+    link_to_fact = "SQLScript/load_fact_sales.sql"
+    with open(os.path.join(PROJECT_DIR, link_to_fact), 'r') as f:
         query = text(f.read())
     df = pd.read_sql(query, staging_engine)
     if df.empty:
@@ -348,8 +361,8 @@ def load_fact_production(staging, dw):
     dw_engine, dw_session = dw
     table_in = 'sales.order'
     table_out = 'fact_production'
-
-    with open("/home/thangquang/Documents/CODE/sales-dataengineer-project/load_fact_production.sql", "r") as f:
+    link_to_fact = "SQLScript/load_fact_production.sql"
+    with open(os.path.join(PROJECT_DIR, link_to_fact), 'r') as f:
         query = text(f.read())
     df = pd.read_sql(query, staging_engine)
     if df.empty:
@@ -363,3 +376,6 @@ def load_fact_production(staging, dw):
     df.to_sql(table_out, dw_engine, if_exists='append', index=false)
     print(f"Inserted {len(df)} records to {table_out} in PostgreSQL")
     update_isprocessed(session=staging_session, table_name=table_in)
+
+if __name__ == "__main__":
+    pass

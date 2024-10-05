@@ -42,7 +42,7 @@ EDR = {
     ]
 }
 
-def load_data_to_staging(schema, table, mysql_session, postgress_session, batch_size=10000):
+def load_table_to_staging(schema, table, mysql_engine, mysql_session, postgres_engine, postgress_session, batch_size=10000):
     mysql_columns = [col[0].lower() for col in mysql_session.execute(text(f'SHOW COLUMNS FROM {schema}_{table}')).fetchall()]
     mysql_columns.remove('checkstatus')
     mysql_data = mysql_session.execute(text(f'SELECT * FROM {schema}_{table} WHERE checkStatus != 1')).fetchall()
@@ -74,26 +74,43 @@ def load_data_to_staging(schema, table, mysql_session, postgress_session, batch_
     mysql_session.commit()
     print(f'Updated checkStatus for {schema}_{table} in MySQL')
 
-# Connect to MySQL and PostgreSQL
-try:
-    mysql_engine = create_engine(f'mysql+mysqlconnector://{mysql_config["user"]}:{mysql_config["password"]}@{mysql_config["host"]}/{mysql_config["database"]}')
-    postgres_engine = create_engine(f'postgresql+psycopg2://{psql_config["user"]}:{psql_config["password"]}@{psql_config["host"]}:{psql_config["port"]}/{psql_config["database"]}')
-    mysql_session = sessionmaker(bind=mysql_engine)()
-    postgress_session = sessionmaker(bind=postgres_engine)()
-    print('Connected to MySQL and PostgreSQL successfully')
-except Exception as e:
-    print(f'Error connecting to database: {e}')
-    exit(1)
+def load_to_staging(EDR, mysql_engine, mysql_session, postgres_engine, postgress_session, batch_size=10000):
+    batch_size = 10000  # the batch size for upserting data
+    print('Start loading data to staging...')
+    print('Batch size:', batch_size)
+    print('----------------------------------')
+    for schema in EDR.keys():
+        for table in EDR[schema]:
+            print(f'Loading {schema}_{table} to staging...')
+            load_table_to_staging(schema, table, mysql_engine, mysql_session, postgres_engine, postgress_session, batch_size)
+            
+    postgress_session.commit()
+    mysql_session.close()
+    postgress_session.close()
+    print('Loading data to staging successfully')
+    print('----------------------------------')
 
-batch_size = 10000  # the batch size for upserting data
-print('Start loading data to staging...')
-print('Batch size:', batch_size)
-print('----------------------------------')
-for schema in EDR.keys():
-    for table in EDR[schema]:
-        print(f'Loading {schema}_{table} to staging...')
-        load_data_to_staging(schema, table, mysql_session, postgress_session, batch_size)
-        
-postgress_session.commit()
-mysql_session.close()
-postgress_session.close()
+if __name__ == '__main__':
+    # Connect to MySQL and PostgreSQL
+    try:
+        mysql_engine = create_engine(f'mysql+mysqlconnector://{mysql_config["user"]}:{mysql_config["password"]}@{mysql_config["host"]}/{mysql_config["database"]}')
+        postgres_engine = create_engine(f'postgresql+psycopg2://{psql_config["user"]}:{psql_config["password"]}@{psql_config["host"]}:{psql_config["port"]}/{psql_config["database"]}')
+        mysql_session = sessionmaker(bind=mysql_engine)()
+        postgress_session = sessionmaker(bind=postgres_engine)()
+        print('Connected to MySQL and PostgreSQL successfully')
+    except Exception as e:
+        print(f'Error connecting to database: {e}')
+        exit(1)
+
+    batch_size = 10000  # the batch size for upserting data
+    print('Start loading data to staging...')
+    print('Batch size:', batch_size)
+    print('----------------------------------')
+    for schema in EDR.keys():
+        for table in EDR[schema]:
+            print(f'Loading {schema}_{table} to staging...')
+            load_table_to_staging(schema, table, mysql_session, postgress_session, batch_size)
+            
+    postgress_session.commit()
+    mysql_session.close()
+    postgress_session.close()

@@ -1,0 +1,7 @@
+{
+    'user': 'postgres',
+    'password': '090924',
+    'host': 'localhost',
+    'database': 'sales_dw_staging',
+    'port': '5432'
+}
