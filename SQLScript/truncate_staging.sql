@@ -1,2 +1,0 @@
-TRUNCATE TABLE sales.order CASCADE;
-TRUNCATE TABLE sales.order_detail CASCADE;

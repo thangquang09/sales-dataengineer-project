@@ -1,7 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from function_for_ETL import *
-from gererate_daily_data import generate_data
 from load_into_staging import EDR, load_to_staging
 from load_into_dw import load_to_dw
 

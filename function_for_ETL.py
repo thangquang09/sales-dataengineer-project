@@ -293,6 +293,14 @@ def load_with_batch(engine, session, table_name, schema='public', data_list=None
         data = data_list[i: i + batch_size]
         upsert_data(engine, session, table_name, schema, data, conflict_column)
 
+def generate_data(mysql_session, min_cus=10, max_cus=30, min_order=500, max_order=1000):
+    print(f"Generating data with {min_cus} to {max_cus} customers and {min_order} to {max_order} orders")
+    print('----------------------------------')
+    query = text(f"CALL generate_daily_data({min_cus}, {max_cus}, {min_order}, {max_order})")
+    mysql_session.execute(query)
+    mysql_session.commit()
+    print("Generated data successfully")
+    print('----------------------------------')
 
 def load_dim_city(staging, dw):
     staging_engine, staging_session = staging
