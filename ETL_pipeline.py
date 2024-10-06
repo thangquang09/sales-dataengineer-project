@@ -4,7 +4,6 @@ from function_for_ETL import *
 from gererate_daily_data import generate_data
 from load_into_staging import EDR, load_to_staging
 from load_into_dw import load_to_dw
-from export_report import make_report
 
 if __name__ == '__main__':
     # Config
@@ -24,7 +23,7 @@ if __name__ == '__main__':
         dw_session = sessionmaker(bind=dw_engine)()
         print('Connected to MySQL, PostgreSQL and DataWarehouse successfully')
     # ---- generating data in mysql ----
-        generate_data(mysql_session, 10, 30, 300, 400)
+        generate_data(mysql_session)
         
     # ---- load from mysql to postgresql staging ----
         load_to_staging(EDR, mysql_engine, mysql_session, staging_engine, staging_session)

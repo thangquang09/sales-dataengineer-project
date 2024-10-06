@@ -2,8 +2,8 @@ from sqlalchemy import text
 from sqlalchemy.orm import sessionmaker
 from function_for_ETL import *
 
-def generate_data(mysql_session, min_cus, max_cus, min_order, max_order):
-    print("Generating data")
+def generate_data(mysql_session, min_cus=10, max_cus=30, min_order=500, max_order=1000):
+    print(f"Generating data with {min_cus} to {max_cus} customers and {min_order} to {max_order} orders")
     print('----------------------------------')
     query = text(f"CALL generate_daily_data({min_cus}, {max_cus}, {min_order}, {max_order})")
     mysql_session.execute(query)
