@@ -2,6 +2,17 @@
 
 ![Background](image/background.png)
 
+**TABLE OF CONTENT**
+
+- [SALES DATA ENGINNER PROJECT](#sales-data-enginner-project)
+  - [Introduction](#introduction)
+  - [Requirements](#requirements)
+  - [Design MYSQL EDR](#design-mysql-edr)
+  - [Staging and Data Warehouse](#staging-and-data-warehouse)
+  - [Final Report](#final-report)
+  - [How to run?](#how-to-run)
+
+
 ## Introduction
 
 This is my Data Engineer Project on sales data. In this project, I designed a MySQL database to store daily transaction data and a two-layer Data Warehouse using PostgreSQL, consisting of a Staging layer and a Data Warehouse layer. In the Data Warehouse, I created VIEWS to meet the requirements that will be listed later, allowing the construction of dashboards to display these requirements. The tool I used for ETL is Python, and I scheduled periodic data loads into the Data Warehouse using Apache Airflow.
@@ -54,6 +65,10 @@ We will have some insight:
 ![top 10 best](image/top_10best.png)
 - Top 10 worst-selling products
 ![top 10 worst](image/top_10worst.png)
+
+## Final Report
+
+![Final report](image/report.png)
 
 ## How to run?
 
