@@ -38,7 +38,7 @@ The schema of staging layer is exactly the same as MySQL's schema but adds contr
 
 The schema of data warehouse layer is in picture below:
 
-![Star Schema](image/star_schema.png)
+![Start Schema](image/star_schema.png)
 
 This DW has 3 materialized views to support creating dashboard `view_store_city_employee_cus`, `view_quantity_cate_store_city`, `view_online_offline_summary`.
 
@@ -65,13 +65,20 @@ We will have some insight:
 
 3. You use SQL script [initial_dw_postgreSQL.sql](SQLScript/initial_dw_postgreSQL.sql) and [initial_dw_staging_postgreSQL.sql](SQLScript/initial_dw_staging_postgreSQL.sql) to create tables, constraints, views for staging and dw layers.
 4. Go to [mysql_conf.txt](mysql_conf.txt), [staging_conf.txt](staging_conf.txt), [dw_conf.txt](dw_conf.txt) and modify your information to connect to your databases.
-5. Install requirement modules
+5. Notice that add postgres user to group who is the owner of your project folder, because it need to export CSV file to visualize. You can check user_name and group_name by command
+   ```bash
+   ls -l /path/to/your/project
+   ```
+   ```bash
+   sudo adduser user_name group_name
+   ```
+6. Install requirement modules
    ```bash
    python3 -m pip install -r requirement.txt
    ```
-6. Finally run [ETL_pipeline.py](ETL_pipeline.py) by
+7. Finally run [ETL_pipeline.py](ETL_pipeline.py) by
    ```bash
    python3 ETL_pipeline.py
    ```
-7. If you want to use Airflow to run it periodically, you have to install airflow and move project to your airflow DAG directory, the main dag is [airflow_dag.py](airflow_dag.py), then it will be ok.
+8. If you want to use Airflow to run it periodically, you have to install airflow and move project to your airflow DAG directory, the main dag is [airflow_dag.py](airflow_dag.py), then it will be ok.
 
