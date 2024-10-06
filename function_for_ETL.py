@@ -616,10 +616,14 @@ def load_fact_production(staging, dw):
     update_isprocessed(session=staging_session, table_name=table_in1)
     update_isprocessed(session=staging_session, table_name=table_in2)
 
-def truncate_staging(staging_session, path_file='SQLScript/truncate_staging.sql'):
-    with open(os.path.join(PROJECT_DIR, path_file), 'r') as f:
-        query = text(f.read())
-    print
+def truncate_staging(staging_session):
+    query = text(
+        """
+        TRUNCATE TABLE sales.order CASCADE;
+        TRUNCATE TABLE sales.order_detail CASCADE;
+        """
+    )
+
     print('Truncating staging...')
     staging_session.execute(query)
     staging_session.commit()
