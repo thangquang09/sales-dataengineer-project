@@ -18,7 +18,7 @@ The client company needs to manage a chain of electronics stores, requiring mana
 
 Build a dashboard that displays:
 
-- Revenue, profit, number of orders, average value based on criteria: product, store, employee, city, customer
+- Revenue, profit, number of orders value based on criteria: product, store, employee, city, customer
 - Quantity of products sold by category, store, city
 - Ratio of online/offline revenue and order numbers over time
 - For online orders, the structure of order numbers and revenue by source ("Tiki", "Shopee", etc.)
@@ -44,7 +44,7 @@ This DW has 3 materialized views to support creating dashboard `view_store_city_
 
 We will have some insight:
 
-- Revenue, prodit, number of orders, average value of employee:
+- Revenue, profit, number of orders, average value of employee:
 ![employee](image/revenue_employee.png)
 - Quantity of products sold by store
 ![store](image/quantity_store.png)
