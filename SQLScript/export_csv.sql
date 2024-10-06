@@ -115,6 +115,11 @@ COPY
 (SELECT
 	month_name,
 	year,
+	SUM(revenue_online) AS revenue_online,
+	SUM(revenue_offline) AS revenue_offline,
+	SUM(number_order_online) AS number_order_online,
+	SUM(number_order_offline) AS number_order_offline,
+	SUM(number_order_online + number_order_offline) as number_order,
 	SUM(revenue_online) / SUM(revenue) as ratio_revenue_on,
 	SUM(revenue_offline) / SUM(revenue) as ratio_revenue_off,
 	SUM(number_order_online) / SUM(number_order_online + number_order_offline) as ratio_number_order_on,
