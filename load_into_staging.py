@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
 from urllib.parse import quote_plus
 from datetime import datetime
-from function_for_ETL import upsert_data
+from function_for_ETL import *
 
 EDR = {
     "production": [
@@ -21,6 +21,9 @@ EDR = {
         "order_detail",
     ]
 }
+
+
+
 
 def load_table_to_staging(schema, table, mysql_engine, mysql_session, postgres_engine, postgress_session, batch_size=10000):
     mysql_columns = [col[0].lower() for col in mysql_session.execute(text(f'SHOW COLUMNS FROM {schema}_{table}')).fetchall()]
@@ -73,8 +76,10 @@ def load_to_staging(EDR, mysql_engine, mysql_session, postgres_engine, postgress
 if __name__ == '__main__':
     # Connect to MySQL and PostgreSQL
     try:
-        mysql_engine = create_engine(f'mysql+mysqlconnector://{mysql_config["user"]}:{mysql_config["password"]}@{mysql_config["host"]}/{mysql_config["database"]}')
-        postgres_engine = create_engine(f'postgresql+psycopg2://{psql_config["user"]}:{psql_config["password"]}@{psql_config["host"]}:{psql_config["port"]}/{psql_config["database"]}')
+        mysql_config = get_config('mysql_conf.txt')
+        psql_config = get_config('staging_conf.txt')
+        mysql_engine = get_engine(mysql_config, 'mysql')
+        postgres_engine = get_engine(psql_config, 'postgresql')
         mysql_session = sessionmaker(bind=mysql_engine)()
         postgress_session = sessionmaker(bind=postgres_engine)()
         print('Connected to MySQL and PostgreSQL successfully')
