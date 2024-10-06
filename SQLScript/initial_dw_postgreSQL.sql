@@ -125,6 +125,7 @@ CREATE TABLE Fact_Production (
     product_id INT NOT NULL,
     quantity INT,
     revenue DECIMAL(15, 2),
+    profit DECIMAL(15, 2),
     CONSTRAINT production_fk_date FOREIGN KEY (date_id) REFERENCES Dim_Date(date_id),
     CONSTRAINT production_fk_store FOREIGN KEY (store_id) REFERENCES Dim_Store(store_id),
     CONSTRAINT production_fk_product FOREIGN KEY (product_id) REFERENCES Dim_Product(product_id)
@@ -185,7 +186,8 @@ SELECT
 	city.city_id,
 	city.name as city_name,
 	SUM(fp.quantity) as quantity,
-    SUM(fp.revenue) as revenue
+    SUM(fp.revenue) as revenue,
+    SUM(fp.profit) as profit
 FROM
 	fact_production fp
 	JOIN dim_product p ON fp.product_id = p.product_id

@@ -25,18 +25,21 @@ if __name__ == '__main__':
     # ---- generating data in mysql ----
         generate_data(mysql_session, 10, 30, 300, 400)
         
-    # # ---- load from mysql to postgresql staging ----
+    # ---- load from mysql to postgresql staging ----
         load_to_staging(EDR, mysql_engine, mysql_session, staging_engine, staging_session)
 
-    # # ---- load from staging to dw ----
+    # ---- load from staging to dw ----
         load_to_dw(staging_engine, staging_session, dw_engine, dw_session)
 
-    # # ---- truncate data in staging ----
+    # ---- truncate data in staging ----
         truncate_staging(staging_session)
     
     # ---- refresh view in dw ----
-
         refresh_view(dw_session)
+
+    # ---- export data from dw to csv ----
+        export_csv(dw_session)
+        
     # ---- end ----
         print('ETL pipeline completed')
         print('----------------------------------')

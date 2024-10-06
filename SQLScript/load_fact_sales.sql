@@ -6,8 +6,8 @@ SELECT
     COUNT(order_id) AS number_order,
 	SUM(CASE WHEN isOnline = true THEN total ELSE 0 END) AS revenue_online,
 	SUM(CASE WHEN isOnline = false THEN total ELSE 0 END) AS revenue_offline,
-    COUNT(CASE WHEN isOnline = true THEN 1 ELSE 0 END) AS number_order_online,
-    COUNT(CASE WHEN isOnline = false THEN 1 ELSE 0 END) AS number_order_offline
+    SUM(CASE WHEN isOnline = true THEN 1 ELSE 0 END) AS number_order_online,
+    SUM(CASE WHEN isOnline = false THEN 1 ELSE 0 END) AS number_order_offline
 FROM 
     sales.order
 WHERE

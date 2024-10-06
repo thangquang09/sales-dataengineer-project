@@ -411,5 +411,14 @@ def refresh_view(dw_session):
         print(f'{view_name} refreshed successfully')
     print('----------------------------------')
 
+def export_csv(dw_session):
+    print('Exporting data to CSV...')
+    with open(f"{PROJECT_DIR}/SQLScript/export_csv.sql", 'r') as f:
+        query = text(f.read())
+    dw_session.execute(query)
+    dw_session.commit()
+    print('Exported data to CSV successfully')
+    print('----------------------------------')
+
 if __name__ == "__main__":
     pass
