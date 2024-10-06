@@ -4,6 +4,7 @@ from function_for_ETL import *
 from gererate_daily_data import generate_data
 from load_into_staging import EDR, load_to_staging
 from load_into_dw import load_to_dw
+from export_report import make_report
 
 if __name__ == '__main__':
     # Config
@@ -39,7 +40,9 @@ if __name__ == '__main__':
 
     # ---- export data from dw to csv ----
         export_csv(dw_session)
-        
+
+    # ---- export report ----
+        make_report()
     # ---- end ----
         print('ETL pipeline completed')
         print('----------------------------------')
