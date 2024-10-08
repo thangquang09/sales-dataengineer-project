@@ -8,7 +8,14 @@ import matplotlib.pyplot as plt
 import os
 
 month_name = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-PROJECT_DIR = "/home/thangquang/Documents/CODE/sales-dataengineer-project"
+if '__file__' in globals():
+    PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+else:
+    # Set PROJECT_DIR to the current working directory or any desired path
+    PROJECT_DIR = os.getcwd()
+
+print(f"Project directory: {PROJECT_DIR}")
+
 copy_queries = [
     ("employee_rev_pro_num.csv", """
     (SELECT
