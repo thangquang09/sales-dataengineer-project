@@ -25,7 +25,7 @@ EDR = {
 
 
 
-def load_table_to_staging(schema, table, mysql_engine, mysql_session, postgres_engine, postgress_session, batch_size=1):
+def load_table_to_staging(schema, table, mysql_engine, mysql_session, postgres_engine, postgress_session, batch_size=1000):
     query = text(f'SELECT * FROM {schema}_{table} WHERE checkStatus != 1')
     df = pd.read_sql(query, mysql_engine)
 
