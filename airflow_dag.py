@@ -11,7 +11,6 @@ from gererate_daily_data import generate_data
 from load_into_staging import EDR, load_to_staging
 from load_into_dw import load_to_dw
 
-PROJECT_FOLDER = '/home/thangquang/Documents/CODE/sales-dataengineer-project'
 
 # define the default arguments
 default_args = {

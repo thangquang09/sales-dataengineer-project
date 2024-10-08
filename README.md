@@ -79,7 +79,7 @@ We will have some insight:
 ![step 2](image/create_db_postgres_2.png)
 
 3. You use SQL script [initial_dw_postgreSQL.sql](SQLScript/initial_dw_postgreSQL.sql) and [initial_dw_staging_postgreSQL.sql](SQLScript/initial_dw_staging_postgreSQL.sql) to create tables, constraints, views for staging and dw layers.
-4. Go to [mysql_conf.txt](mysql_conf.txt), [staging_conf.txt](staging_conf.txt), [dw_conf.txt](dw_conf.txt) and modify your information to connect to your databases.
+4. Go to [mysql_conf.txt](mysql_conf.txt), [staging_conf.txt](staging_conf.txt), [dw_conf.txt](dw_conf.txt) and modify your information to connect to your databases. Make sure that, the user has `SELECT`, `UPDATE` privilege.
 5. Notice that add postgres user to group who is the owner of your project folder, because it need to export CSV file to visualize. You can check user_name and group_name by command
    ```bash
    ls -l /path/to/your/project
