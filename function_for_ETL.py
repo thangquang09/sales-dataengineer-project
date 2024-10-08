@@ -273,7 +273,7 @@ def generate_date(min_year, max_year):
 def update_isprocessed(session, table_name):
     query = text(f'UPDATE {table_name} SET isprocessed = true WHERE isprocessed = false')
     session.execute(query)
-    session.commit()
+    # session.commit()
 
 # for city table
 def upsert_data(engine, session, table_name, schema='public', data_list=None, conflict_column=None):
@@ -290,7 +290,7 @@ def upsert_data(engine, session, table_name, schema='public', data_list=None, co
     
     # excute upsert statement
     session.execute(upsert_stmt)
-    session.commit()
+    # session.commit()
 
 def load_with_batch(engine, session, table_name, schema='public', data_list=None, batch_size=1000, conflict_column=None):
     # check if data_list is pd.DataFrame -> convert to dict
@@ -305,13 +305,15 @@ def load_with_batch(engine, session, table_name, schema='public', data_list=None
     for i in range(0, len(data_list), batch_size):
         data = data_list[i: i + batch_size]
         upsert_data(engine, session, table_name, schema, data, conflict_column)
+    
+    session.commit() # commit after all batch
 
 def generate_data(mysql_session, min_cus=10, max_cus=30, min_order=500, max_order=1000):
     print(f"Generating data with {min_cus} to {max_cus} customers and {min_order} to {max_order} orders")
     print('----------------------------------')
     query = text(f"CALL generate_daily_data({min_cus}, {max_cus}, {min_order}, {max_order})")
     mysql_session.execute(query)
-    mysql_session.commit()
+    mysql_session.commit() # must be commited because it's a stored procedure, and it will be good for load data to staging
     print("Generated data successfully")
     print('----------------------------------')
 
@@ -638,7 +640,7 @@ def refresh_view(dw_session):
         refresh_query = text(f"REFRESH MATERIALIZED VIEW {view_name};")
         # print(refresh_query)
         dw_session.execute(refresh_query)
-        dw_session.commit()
+        # dw_session.commit()
         print(f'{view_name} refreshed successfully')
     print('----------------------------------')
 
