@@ -58,7 +58,6 @@ def load_table_to_staging(schema, table, mysql_engine, mysql_session, postgres_e
     print(f'Updated checkStatus for {schema}_{table} in MySQL')
 
 def load_to_staging(EDR, mysql_engine, mysql_session, postgres_engine, postgress_session, batch_size=10000):
-    batch_size = 10000  # the batch size for upserting data
     print('Start loading data to staging...')
     print('Batch size:', batch_size)
     print('----------------------------------')

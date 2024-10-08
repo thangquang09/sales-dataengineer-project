@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import os
 
 month_name = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-PROJECT_DIR = ("/home/thangquang/Documents/CODE/sales-dataengineer-project")
+PROJECT_DIR = "/home/thangquang/Documents/CODE/sales-dataengineer-project"
 copy_queries = [
     ("employee_rev_pro_num.csv", """
     (SELECT
@@ -286,6 +286,12 @@ def upsert_data(engine, session, table_name, schema='public', data_list=None, co
     session.commit()
 
 def load_with_batch(engine, session, table_name, schema='public', data_list=None, batch_size=1000, conflict_column=None):
+    # check if data_list is pd.DataFrame -> convert to dict
+    if isinstance(data_list, pd.DataFrame):
+        if conflict_column is None:
+            conflict_column = data_list.columns[0]
+        data_list = data_list.to_dict('records')
+
     metadata = MetaData()
     table = Table(table_name, metadata, autoload_with=engine, schema=schema)
 
@@ -302,20 +308,22 @@ def generate_data(mysql_session, min_cus=10, max_cus=30, min_order=500, max_orde
     print("Generated data successfully")
     print('----------------------------------')
 
+def get_df(staging, table_in, columns):
+    staging_engine, staging_session = staging
+    query = text(f'SELECT {columns} FROM {table_in} WHERE isprocessed = false')
+    return pd.read_sql(query, staging_engine)
+
 def load_dim_city(staging, dw):
     staging_engine, staging_session = staging
     dw_engine, dw_session = dw
     table_in = 'sales.city'
     table_out = 'dim_city'
     columns = ",".join(['city_id', 'name'])
-    query = text(f'SELECT {columns} FROM {table_in} WHERE isprocessed = false')
-    df = pd.read_sql(query, staging_engine)
+    df = get_df(staging, table_in, columns)
     if df.empty:
         print(f'{table_out} is up to date')
         return
-    conflict_column = df.columns[0]
-    data_list = df.to_dict('records')
-    load_with_batch(dw_engine, dw_session, table_out, 'public', data_list, conflict_column=conflict_column)
+    load_with_batch(dw_engine, dw_session, table_out, 'public', data_list = df)
     update_isprocessed(staging_session, table_in)
     print(f'Upserted {len(df)} records from {table_in} to {table_out} in PostgreSQL')
 
@@ -326,14 +334,11 @@ def load_dim_store(staging, dw):
     table_in = 'sales.store'
     table_out = 'dim_store'
     columns = ",".join(['store_id', 'name', 'city_id'])
-    query = text(f'SELECT {columns} FROM {table_in} WHERE isprocessed = false')
-    df = pd.read_sql(query, staging_engine)
+    df = get_df(staging, table_in, columns)
     if df.empty:
         print(f'{table_out} is up to date')
         return
-    conflict_column = df.columns[0]
-    data_list = df.to_dict('records')
-    load_with_batch(dw_engine, dw_session, table_out, 'public', data_list, conflict_column=conflict_column)
+    load_with_batch(dw_engine, dw_session, table_out, 'public', df)
     update_isprocessed(staging_session, table_in)
     print(f'Upserted {len(df)} records from {table_in} to {table_out} in PostgreSQL')
 
@@ -343,8 +348,7 @@ def load_dim_employee(staging, dw):
     table_in = 'sales.employee'
     table_out = 'dim_employee'
     columns = ",".join(['employee_id', 'name', 'store_id', 'dob', 'identitynumber'])
-    query = text(f'SELECT {columns} FROM {table_in} WHERE isprocessed = false')
-    df = pd.read_sql(query, staging_engine)
+    df = get_df(staging, table_in, columns)
     if df.empty:
         print(f'{table_out} is up to date')
         return
@@ -353,9 +357,7 @@ def load_dim_employee(staging, dw):
     identity_handler = lambda x: str(random.randint(100000, 999999)) if pd.isnull(x) else x
     df['dob'] = df['dob'].apply(dob_handler)
     df['identitynumber'] = df['identitynumber'].apply(identity_handler)
-    conflict_column = df.columns[0]
-    data_list = df.to_dict('records')
-    load_with_batch(dw_engine, dw_session, table_out, 'public', data_list, conflict_column=conflict_column)
+    load_with_batch(dw_engine, dw_session, table_out, 'public', df)
     update_isprocessed(staging_session, table_in)
     print(f'Upserted {len(df)} records from {table_in} to {table_out} in PostgreSQL')
 
@@ -366,15 +368,12 @@ def load_dim_customer(staging, dw):
     table_in = 'sales.customer'
     table_out = 'dim_customer'
     columns = ",".join(['customer_id', 'name', 'email'])
-    query = text(f'SELECT {columns} FROM {table_in} WHERE isprocessed = false')
-    df = pd.read_sql(query, staging_engine)
+    df = get_df(staging, table_in, columns)
     if df.empty:
         print(f'{table_out} is up to date')
         return
     # handle columns if it null
-    conflict_column = df.columns[0]
-    data_list = df.to_dict('records')
-    load_with_batch(dw_engine, dw_session, table_out, 'public', data_list, conflict_column=conflict_column)
+    load_with_batch(dw_engine, dw_session, table_out, 'public', df)
     update_isprocessed(staging_session, table_in)
     print(f'Upserted {len(df)} records from {table_in} to {table_out} in PostgreSQL')
 
@@ -384,14 +383,11 @@ def load_dim_source_online(staging, dw):
     table_in = 'sales.source_online'
     table_out = 'dim_source_online'
     columns = ",".join(['source_online_id', 'link_name'])
-    query = text(f'SELECT {columns} FROM {table_in} WHERE isprocessed = false')
-    df = pd.read_sql(query, staging_engine)
+    df = get_df(staging, table_in, columns)
     if df.empty:
         print(f'{table_out} is up to date')
         return
-    conflict_column = df.columns[0]
-    data_list = df.to_dict('records')
-    load_with_batch(dw_engine, dw_session, table_out, 'public', data_list, conflict_column=conflict_column)
+    load_with_batch(dw_engine, dw_session, table_out, 'public', df)
     update_isprocessed(staging_session, table_in)
     print(f'Upserted {len(df)} records from {table_in} to {table_out} in PostgreSQL')
 
@@ -517,19 +513,14 @@ def load_dim_brand(staging, dw):
     dw_engine, dw_session = dw
     table_in = 'production.brand'
     table_out = 'dim_brand'
-    columns = ",".join(["brand_id", "name"])
-    query = text(f"SELECT {columns} FROM {table_in} WHERE isprocessed = false")
-
-    staging_df = pd.read_sql(query, staging_engine)
-    if staging_df.empty:
+    df = get_df(staging, table_in, 'brand_id, name')
+    if df.empty:
         print(f"{table_out} is up to date")
         return
 
-    conflict_column = staging_df.columns[0]
-    data_list = staging_df.to_dict('records')
-    load_with_batch(dw_engine, dw_session, table_out, data_list=data_list, conflict_column=conflict_column)
+    load_with_batch(dw_engine, dw_session, table_out, data_list=df)
     update_isprocessed(staging_session, table_in)
-    print(f"Upserted {len(staging_df)} records from {table_in} to {table_out} in PostgreSQL")
+    print(f"Upserted {len(df)} records from {table_in} to {table_out} in PostgreSQL")
 
 def load_dim_category(staging, dw):
     staging_engine, staging_session = staging
@@ -537,18 +528,14 @@ def load_dim_category(staging, dw):
     table_in = 'production.category'
     table_out = 'dim_category'
     columns = ",".join(["category_id", "name"])
-    query = text(f"SELECT {columns} FROM {table_in} WHERE isprocessed = false")
-
-    staging_df = pd.read_sql(query, staging_engine)
-    if staging_df.empty:
+    df = get_df(staging, table_in, columns)
+    if df.empty:
         print(f"{table_out} is up to date")
         return
 
-    conflict_column = staging_df.columns[0]
-    data_list = staging_df.to_dict('records')
-    load_with_batch(dw_engine, dw_session, table_out, data_list=data_list, conflict_column=conflict_column)
+    load_with_batch(dw_engine, dw_session, table_out, data_list=df)
     update_isprocessed(staging_session, table_in)
-    print(f"Upserted {len(staging_df)} records from {table_in} to {table_out} in PostgreSQL")
+    print(f"Upserted {len(df)} records from {table_in} to {table_out} in PostgreSQL")
 
 def load_dim_product(staging, dw):
     staging_engine, staging_session = staging
@@ -567,16 +554,12 @@ def load_dim_product(staging, dw):
         'price'
     ])
 
-    query = text(f'SELECT {columns} FROM {table_in} WHERE isprocessed = false')
-    df = pd.read_sql(query, staging_engine)
+    df = get_df(staging, table_in, columns)
     if df.empty:
         print(f'{table_out} is up to date')
         return
-    
-    conflict_column = df.columns[0]
-    data_list = df.to_dict('records')
 
-    load_with_batch(dw_engine, dw_session, table_out, data_list=data_list, conflict_column=conflict_column)
+    load_with_batch(dw_engine, dw_session, table_out, data_list=df)
     update_isprocessed(staging_session, table_in)
     print(f"Upserted {len(df)} records from {table_in} to {table_out} in PostgreSQL")
 
@@ -652,6 +635,59 @@ def refresh_view(dw_session):
         print(f'{view_name} refreshed successfully')
     print('----------------------------------')
 
+def reset_staging(staging_session):
+    drop_path = os.path.join(PROJECT_DIR, 'SQLScript/drop_staging.sql')
+    initial_path = os.path.join(PROJECT_DIR, 'SQLScript/initial_dw_staging_postgreSQL.sql')
+    with open(drop_path, 'r') as f:
+        drop_query = text(f.read())
+    with open(initial_path, 'r') as f:
+        initial_query = text(f.read())
+    print('Dropping staging...')
+    staging_session.execute(drop_query)
+    staging_session.commit()
+    print('Dropped staging successfully')
+    print('----------------------------------')
+    print('Creating staging...')
+    staging_session.execute(initial_query)
+    staging_session.commit()
+    print('Created staging successfully')
+    print('----------------------------------')
+
+def reset_dw(dw_session):
+    drop_path = os.path.join(PROJECT_DIR, 'SQLScript/drop_dw.sql')
+    initial_path = os.path.join(PROJECT_DIR, 'SQLScript/initial_dw_postgreSQL.sql')
+    with open(drop_path, 'r') as f:
+        drop_query = text(f.read())
+    with open(initial_path, 'r') as f:
+        initial_query = text(f.read())
+    print('Dropping DataWarehouse...')
+    dw_session.execute(drop_query)
+    dw_session.commit()
+    print('Dropped DataWarehouse successfully')
+    print('----------------------------------')
+    print('Creating DataWarehouse...')
+    dw_session.execute(initial_query)
+    dw_session.commit()
+    print('Created DataWarehouse successfully')
+    print('----------------------------------')
+
+def reset_mysql(mysql_session):
+    reset_path = os.path.join(PROJECT_DIR, 'SQLScript/reset_mysql.sql')
+    with open(reset_path, 'r') as f:
+        reset_queries = f.read().split(';')  # Split the script into individual statements
+    
+    print('Resetting MySQL...')
+    
+    for query in reset_queries:
+        if query.strip():  # Skip empty statements
+            mysql_session.execute(text(query))
+    
+    # Commit the transaction
+    mysql_session.commit()
+    
+    print('Reset MySQL successfully')
+    print('----------------------------------')
+
 def export_csv(dw_session):
     base_path = os.path.join(PROJECT_DIR, 'csv_folder')
     if not os.path.exists(base_path):
@@ -666,7 +702,6 @@ def export_csv(dw_session):
 def make_report():
     print('Making report...')
     # ---- Load data ----
-    PROJECT_DIR = ("/home/thangquang/Documents/CODE/sales-dataengineer-project")
     path = os.path.join(PROJECT_DIR, 'csv_folder')
 
     cate = pd.read_csv(os.path.join(path, 'category_quantity_product.csv'))
