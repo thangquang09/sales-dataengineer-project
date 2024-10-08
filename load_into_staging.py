@@ -77,7 +77,7 @@ if __name__ == '__main__':
         print(f'Error connecting to database: {e}')
         exit(1)
 
-    batch_size = 10000  # the batch size for upserting data
+    batch_size = 1000  # the batch size for upserting data
     load_to_staging(EDR, mysql_engine, mysql_session, postgres_engine, postgress_session, batch_size)
             
     postgress_session.commit()
