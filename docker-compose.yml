@@ -1,0 +1,36 @@
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: sales_db
+      MYSQL_USER: thangquang
+      MYSQL_PASSWORD: thangquang
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d   # Mount thư mục chứa các script SQL
+    networks:
+      - thangquang
+
+  # postgres:
+  #   image: postgres
+  #   container_name: postgres
+  #   environment:
+  #     - POSTGRES_USER=thangquang
+  #     - POSTGRES_PASSWORD=thangquang
+  #     - POSTGRES_DB=sales_db
+  #   logging:
+  #     options:
+  #       max-size: 10m
+  #       max-file: "3"
+  #   networks:
+  #     - thangquang
+
+volumes:
+  mysql_data:
+
+networks:
+  thangquang:

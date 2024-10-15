@@ -1,0 +1,7 @@
+mysql-connector-python
+pandas
+psycopg2-binary
+sqlalchemy
+pymysql
+matplotlib
+numpy

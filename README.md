@@ -89,7 +89,7 @@ We will have some insight:
    ```
 6. Install requirement modules
    ```bash
-   python3 -m pip install -r requirement.txt
+   python3 -m pip install -r requirements.txt
    ```
 7. Finally run [ETL_pipeline.py](ETL_pipeline.py) by
    ```bash
