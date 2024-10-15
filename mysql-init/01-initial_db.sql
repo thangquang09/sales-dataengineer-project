@@ -121,5 +121,3 @@ ALTER TABLE sales_order ADD CONSTRAINT fk_store_order FOREIGN KEY (store_id) REF
 ALTER TABLE sales_order ADD CONSTRAINT fk_source_online FOREIGN KEY (source_online_id) REFERENCES sales_source_online(source_online_id);
 ALTER TABLE sales_order_detail ADD CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES sales_order(order_id);
 ALTER TABLE sales_order_detail ADD CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES production_product(product_id);
-
-

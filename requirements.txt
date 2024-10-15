@@ -1,7 +1,8 @@
-mysql-connector-python
-pandas
+mysql-connector-python==8.0.33
+pandas==1.5.3
+numpy==1.23.5
 psycopg2-binary
-sqlalchemy
+sqlalchemy==1.4.49
 pymysql
 matplotlib
 numpy
