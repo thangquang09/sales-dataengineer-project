@@ -11,26 +11,30 @@ services:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./mysql-init:/docker-entrypoint-initdb.d   # Mount thư mục chứa các script SQL
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    restart: always
     networks:
       - thangquang
 
-  # postgres:
-  #   image: postgres
-  #   container_name: postgres
-  #   environment:
-  #     - POSTGRES_USER=thangquang
-  #     - POSTGRES_PASSWORD=thangquang
-  #     - POSTGRES_DB=sales_db
-  #   logging:
-  #     options:
-  #       max-size: 10m
-  #       max-file: "3"
-  #   networks:
-  #     - thangquang
+  postgres:
+    image: postgres:14
+    container_name: postgres_container
+    ports:
+      - "5431:5432"
+    environment:
+      - POSTGRES_USER=thangquang
+      - POSTGRES_PASSWORD=thangquang
+      - POSTGRES_DB=sales_db
+    volumes:
+      - ./postgres-init:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - thangquang
 
 volumes:
   mysql_data:
+  postgres_data:
 
 networks:
   thangquang:

@@ -3,6 +3,8 @@
 
 -- create Dim of sales first
 
+\c sales_dw;
+
 CREATE TABLE Dim_City (
     city_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL
