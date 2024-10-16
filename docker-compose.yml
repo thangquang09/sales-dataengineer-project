@@ -80,8 +80,26 @@ services:
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres_airflow_container/airflow_db
-      - airflow_python_libs:/usr/local/lib/python3.10/site-packages
+      - airflow_python_libs=/usr/local/lib/python3.10/site-packages
     command: bash -c "pip install -r ./requirements.txt && airflow db upgrade && airflow scheduler"
+    networks:
+      - thangquang
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_container
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False' 
+      PGADMIN_CONFIG_CONNECTIONS: 'True'
+      PGADMIN_SERVER: 'postgres_container'
+      PGADMIN_SERVER_USER: 'thangquang'
+      PGADMIN_SERVER_PASSWORD: 'thangquang'
+    ports:
+      - "8081:80"  # Acess pgAdmin at http://localhost:8081
+    depends_on:
+      - postgres
     networks:
       - thangquang
 

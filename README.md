@@ -1,6 +1,6 @@
 # SALES DATA ENGINNER PROJECT
 
-![Background](image/background.png)
+![Background](image/background.jpg)
 
 **TABLE OF CONTENT**
 
@@ -11,11 +11,14 @@
   - [Staging and Data Warehouse](#staging-and-data-warehouse)
   - [Final Report](#final-report)
   - [How to run?](#how-to-run)
+    - [1. Docker Compose](#1-docker-compose)
+    - [2. Airflow Webserver](#2-airflow-webserver)
+    - [3. PgAdmin](#3-pgadmin)
 
 
 ## Introduction
 
-This is my Data Engineer Project on sales data. In this project, I designed a MySQL database to store daily transaction data and a two-layer Data Warehouse using PostgreSQL, consisting of a Staging layer and a Data Warehouse layer. In the Data Warehouse, I created VIEWS to meet the requirements that will be listed later, allowing the construction of dashboards to display these requirements. The tool I used for ETL is Python, and I scheduled periodic data loads into the Data Warehouse using Apache Airflow.
+This is my Data Engineer Project on sales data. In this project, I designed a MySQL database to store daily transaction data and a two-layer Data Warehouse using PostgreSQL, consisting of a Staging layer and a Data Warehouse layer. In the Data Warehouse, I created VIEWS to meet the requirements that will be listed later, allowing the construction of dashboards to display these requirements. The tool I used for ETL is Python, and I scheduled periodic data loads into the Data Warehouse using Apache Airflow. All techniques will be packaged using Docker Compose.
 
 ## Requirements
 
@@ -72,14 +75,28 @@ We will have some insight:
 
 ## How to run?
 
+### 1. Docker Compose
+
 ```bash
 docker compose up -d
 ```
 
 When all containers are finished, you go to `localhost:8080`, default port of airflow webserver, you can login with `admin:admin` which is username and password.
 
-![GUI airflow webserer](image/airflow_webserver.png)
+### 2. Airflow Webserver
+
+![GUI airflow webserver](image/airflow_webserver.png)
 
 Click "Play" button to trigger
 
 ![trigger](image/airflow_trigger.png)
+
+### 3. PgAdmin
+
+You can go to `localhost:8081`, this is pgAdmin, you can add server which config:
+- username: thangquang
+- password: thangquang
+- port: 5432
+- host name: postgres_container
+
+![pgadmin](image/pgadmin.png)
