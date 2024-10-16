@@ -257,7 +257,7 @@ def get_config(path_file):
 
 def get_engine(config, rdbms):
     if rdbms == 'mysql':
-        return create_engine(f'mysql+mysqlconnector://{config["user"]}:{config["password"]}@{config["host"]}/{config["database"]}')
+        return create_engine(f'mysql+mysqlconnector://{config["user"]}:{config["password"]}@{config["host"]}:{config["port"]}/{config["database"]}')
     elif rdbms == 'postgresql':
         return create_engine(f'postgresql+psycopg2://{config["user"]}:{config["password"]}@{config["host"]}:{config["port"]}/{config["database"]}')
     else:
@@ -577,9 +577,25 @@ def load_fact_sales_order(staging, dw):
     dw_engine, dw_session = dw
     table_in = 'sales.order'
     table_out = 'fact_sales_order'
-    link_to_fact = "SQLScript/load_fact_sales.sql"
-    with open(os.path.join(PROJECT_DIR, link_to_fact), 'r') as f:
-        query = text(f.read())
+    query = text(
+        """
+        SELECT 
+            store_id, employee_id, customer_id, orderdate, source_online_id,
+            SUM(total) AS revenue,
+            SUM(standardcost) AS standardcost,
+            SUM(total - standardCost) AS profit,
+            COUNT(order_id) AS number_order,
+            SUM(CASE WHEN isOnline = true THEN total ELSE 0 END) AS revenue_online,
+            SUM(CASE WHEN isOnline = false THEN total ELSE 0 END) AS revenue_offline,
+            SUM(CASE WHEN isOnline = true THEN 1 ELSE 0 END) AS number_order_online,
+            SUM(CASE WHEN isOnline = false THEN 1 ELSE 0 END) AS number_order_offline
+        FROM 
+            sales.order
+        WHERE
+            isProcessed = false
+        GROUP BY store_id, employee_id, customer_id, orderdate, source_online_id;
+        """
+    )
     df = pd.read_sql(query, staging_engine)
     if df.empty:
         print(f'{table_out} is up to date')
@@ -599,9 +615,25 @@ def load_fact_production(staging, dw):
     table_in1 = 'sales.order'
     table_in2 = 'sales.order_detail'
     table_out = 'fact_production'
-    link_to_fact = "SQLScript/load_fact_production.sql"
-    with open(os.path.join(PROJECT_DIR, link_to_fact), 'r') as f:
-        query = text(f.read())
+    
+    query = text(
+        """
+        SELECT
+            p.product_id, o.orderdate, o.store_id, 
+            SUM(od.quantity) as quantity,
+            SUM(p.price * od.quantity) as revenue,
+            SUM(p.price * od.quantity - p.standardprice) as profit
+        FROM production.product p 
+            JOIN sales.order_detail od ON p.product_id = od.product_id
+            JOIN sales.order o ON od.order_id = o.order_id
+        WHERE
+            o.isProcessed = false
+        GROUP BY
+            p.product_id, o.orderdate, o.store_id;
+
+        """
+    )
+    
     df = pd.read_sql(query, staging_engine)
     if df.empty:
         print(f"{table_out} is up to date")

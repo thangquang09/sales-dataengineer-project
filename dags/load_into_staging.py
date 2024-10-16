@@ -4,6 +4,7 @@ from sqlalchemy import text
 from urllib.parse import quote_plus
 from datetime import datetime
 from function_for_ETL import *
+import pandas as pd
 
 EDR = {
     "production": [
@@ -77,9 +78,10 @@ if __name__ == '__main__':
         print(f'Error connecting to database: {e}')
         exit(1)
 
-    batch_size = 1000  # the batch size for upserting data
-    load_to_staging(EDR, mysql_engine, mysql_session, postgres_engine, postgress_session, batch_size)
+    # batch_size = 1000  # the batch size for upserting data
+    # load_to_staging(EDR, mysql_engine, mysql_session, postgres_engine, postgress_session, batch_size)
             
-    postgress_session.commit()
-    mysql_session.close()
-    postgress_session.close()
+    # postgress_session.commit()
+    # mysql_session.close()
+    # postgress_session.close()
+    df = pd.read_sql("SELECT 1", mysql_engine)
