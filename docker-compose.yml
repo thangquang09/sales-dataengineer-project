@@ -63,8 +63,8 @@ services:
     healthcheck:
       test: ['CMD-SHELL', "[ -f /opt/airflow/airflow-webserver.pid ]"]
       interval: 2m
-      timeout: 10m
-      retries: 3
+      timeout: 2m
+      retries: 10
     networks:
       - thangquang
 
