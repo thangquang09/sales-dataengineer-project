@@ -72,28 +72,14 @@ We will have some insight:
 
 ## How to run?
 
-1. Firstly, you have to install mysql and create sales_db with mysql, the script to initial is [initial_db_MySQL.sql](SQLScript/initial_db_MySQL.sql), the script will help you create sample data randomly. It maybe runs in 10-15 minutes.
-2. Secondly, you go to postgreSQL (I suggest use pgAdmin4 for friendly user interface) and create 2 database `sales_dw_staging` and `sales_dw`.
+```bash
+docker compose up -d
+```
 
-![step 1](image/create_db_postgres.png)
-![step 2](image/create_db_postgres_2.png)
+When all containers are finished, you go to `localhost:8080`, default port of airflow webserver, you can login with `admin:admin` which is username and password.
 
-3. You use SQL script [initial_dw_postgreSQL.sql](SQLScript/initial_dw_postgreSQL.sql) and [initial_dw_staging_postgreSQL.sql](SQLScript/initial_dw_staging_postgreSQL.sql) to create tables, constraints, views for staging and dw layers.
-4. Go to [mysql_conf.txt](mysql_conf.txt), [staging_conf.txt](staging_conf.txt), [dw_conf.txt](dw_conf.txt) and modify your information to connect to your databases. Make sure that, the user has `SELECT`, `UPDATE` privilege.
-5. Notice that add postgres user to group who is the owner of your project folder, because it need to export CSV file to visualize. You can check user_name and group_name by command
-   ```bash
-   ls -l /path/to/your/project
-   ```
-   ```bash
-   sudo adduser user_name group_name
-   ```
-6. Install requirement modules
-   ```bash
-   python3 -m pip install -r requirements.txt
-   ```
-7. Finally run [ETL_pipeline.py](ETL_pipeline.py) by
-   ```bash
-   python3 ETL_pipeline.py
-   ```
-8. If you want to use Airflow to run it periodically, you have to install airflow and move project to your airflow DAG directory, the main dag is [airflow_dag.py](airflow_dag.py), then it will be ok.
+![GUI airflow webserer](image/airflow_webserver.png)
 
+Click "Play" button to trigger
+
+![trigger](image/airflow_trigger.png)
