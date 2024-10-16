@@ -51,10 +51,6 @@ services:
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres_airflow_container/airflow_db
-      - MYSQL_HOST=mysql_container
-      - MYSQL_USER=thangquang
-      - MYSQL_PASSWORD=thangquang
-      - MYSQL_DATABASE=sales_db
     ports:
       - "8080:8080"
     depends_on:
@@ -63,10 +59,11 @@ services:
       - ./dags:/opt/airflow/dags
       - ./script/entrypoint.sh:/opt/airflow/script/entrypoint.sh
       - ./requirements.txt:/opt/airflow/requirements.txt
+      - airflow_python_libs:/usr/local/lib/python3.10/site-packages
     healthcheck:
       test: ['CMD-SHELL', "[ -f /opt/airflow/airflow-webserver.pid ]"]
       interval: 2m
-      timeout: 4m
+      timeout: 10m
       retries: 3
     networks:
       - thangquang
@@ -83,6 +80,7 @@ services:
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres_airflow_container/airflow_db
+      - airflow_python_libs:/usr/local/lib/python3.10/site-packages
     command: bash -c "pip install -r ./requirements.txt && airflow db upgrade && airflow scheduler"
     networks:
       - thangquang
@@ -91,6 +89,7 @@ volumes:
   mysql_data:
   postgres_data:
   postgres_airflow_data:
+  airflow_python_libs:
 
 networks:
   thangquang:
