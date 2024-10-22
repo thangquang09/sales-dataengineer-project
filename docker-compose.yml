@@ -76,14 +76,15 @@ services:
         condition: service_healthy
     volumes:
       - ./dags:/opt/airflow/dags
+      - ./script/entrypoint.sh:/opt/airflow/script/entrypoint.sh
       - ./requirements.txt:/opt/airflow/requirements.txt
+      - airflow_python_libs:/usr/local/lib/python3.10/site-packages
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres_airflow_container/airflow_db
-      - airflow_python_libs=/usr/local/lib/python3.10/site-packages
-    command: bash -c "pip install -r ./requirements.txt && airflow db upgrade && airflow scheduler"
     networks:
       - thangquang
+    command: ["bash", "-c", "airflow db upgrade && airflow scheduler"]
 
   pgadmin:
     image: dpage/pgadmin4
@@ -97,7 +98,7 @@ services:
       PGADMIN_SERVER_USER: 'thangquang'
       PGADMIN_SERVER_PASSWORD: 'thangquang'
     ports:
-      - "8081:80"  # Acess pgAdmin at http://localhost:8081
+      - "8081:80"
     depends_on:
       - postgres
     networks:
