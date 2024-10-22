@@ -14,7 +14,7 @@ from load_into_dw import load_to_dw
 # Define the default arguments
 default_args = {
     'owner': 'thangquang',
-    'start_date': datetime(2024, 10, 15),
+    'start_date': datetime(2024, 10, 22),
     'email': 'thangquangly0909@gmail.com',
     'email_on_failure': True,
     'email_on_retry': False,

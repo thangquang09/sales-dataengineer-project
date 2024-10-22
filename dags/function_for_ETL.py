@@ -4,7 +4,6 @@ import pandas as pd
 from datetime import datetime
 import random
 from urllib.parse import quote_plus
-import matplotlib.pyplot as plt
 import os
 
 month_name = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']

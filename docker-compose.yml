@@ -57,14 +57,15 @@ services:
       - postgres_airflow
     volumes:
       - ./dags:/opt/airflow/dags
-      - ./script/entrypoint.sh:/opt/airflow/script/entrypoint.sh
+      - ./script/webserver_entrypoint.sh:/opt/airflow/script/entrypoint.sh
       - ./requirements.txt:/opt/airflow/requirements.txt
-      - airflow_python_libs:/usr/local/lib/python3.10/site-packages
+      - shared_airflow_libs:/home/airflow/.local/lib/python3.10/site-packages
     healthcheck:
       test: ['CMD-SHELL', "[ -f /opt/airflow/airflow-webserver.pid ]"]
       interval: 2m
       timeout: 2m
       retries: 10
+    restart: always
     networks:
       - thangquang
 
@@ -76,15 +77,16 @@ services:
         condition: service_healthy
     volumes:
       - ./dags:/opt/airflow/dags
-      - ./script/entrypoint.sh:/opt/airflow/script/entrypoint.sh
+      - ./script/scheduler_entrypoint.sh:/opt/airflow/script/entrypoint.sh
       - ./requirements.txt:/opt/airflow/requirements.txt
-      - airflow_python_libs:/usr/local/lib/python3.10/site-packages
+      - shared_airflow_libs:/home/airflow/.local/lib/python3.10/site-packages
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres_airflow_container/airflow_db
+    command: ["bash", "/opt/airflow/script/entrypoint.sh", "airflow", "scheduler"]
+    restart: always
     networks:
       - thangquang
-    command: ["bash", "-c", "airflow db upgrade && airflow scheduler"]
 
   pgadmin:
     image: dpage/pgadmin4
@@ -108,7 +110,7 @@ volumes:
   mysql_data:
   postgres_data:
   postgres_airflow_data:
-  airflow_python_libs:
+  shared_airflow_libs:
 
 networks:
   thangquang:
