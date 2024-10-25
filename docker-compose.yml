@@ -1,7 +1,8 @@
 services:
   mysql:
-    image: mysql:latest
+    image: mysql:8.0.36
     container_name: mysql_container
+    hostname: localhost
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: sales_db
@@ -17,8 +18,9 @@ services:
       - thangquang
 
   postgres:
-    image: postgres:14
+    image: postgres:14.5
     container_name: postgres_container
+    hostname: localhost
     ports:
       - "5432:5432"
     environment:
@@ -33,7 +35,7 @@ services:
       - thangquang
 
   postgres_airflow:
-    image: postgres:14
+    image: postgres:14.5
     container_name: postgres_airflow_container
     environment:
       - POSTGRES_USER=airflow

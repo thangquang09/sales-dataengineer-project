@@ -80,7 +80,7 @@ CREATE TABLE Fact_Sales_Order (
     revenue DECIMAL(15, 2), -- for both of online orders and offline orders
     revenue_online DECIMAL(15, 2),
     revenue_offline DECIMAL(15, 2),
-    standardCost DECIMAL(15, 2),
+    standard_cost DECIMAL(15, 2),
     profit DECIMAL(15, 2),
     number_order INT,
     number_order_online INT,

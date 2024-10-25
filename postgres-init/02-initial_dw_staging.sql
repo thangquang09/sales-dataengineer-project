@@ -3,10 +3,7 @@
 
 \c sales_dw_staging;
 
-CREATE SCHEMA production;
-CREATE SCHEMA sales;
-
-CREATE TABLE production.product (
+CREATE TABLE production_product (
     product_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description VARCHAR(255),
@@ -25,7 +22,7 @@ CREATE TABLE production.product (
     isProcessed BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE production.brand (
+CREATE TABLE production_brand (
     brand_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     createdDate DATE NOT NULL,
@@ -37,7 +34,7 @@ CREATE TABLE production.brand (
     isProcessed BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE production.category (
+CREATE TABLE production_category (
     category_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     createdDate DATE NOT NULL,
@@ -50,7 +47,7 @@ CREATE TABLE production.category (
 );
 
 -- for sales schema
-CREATE TABLE sales.store (
+CREATE TABLE sales_store (
     store_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     city_id INT NOT NULL,
@@ -63,7 +60,7 @@ CREATE TABLE sales.store (
     isProcessed BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE sales.city (
+CREATE TABLE sales_city (
     city_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     createdDate DATE NOT NULL,
@@ -75,7 +72,7 @@ CREATE TABLE sales.city (
     isProcessed BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE sales.employee (
+CREATE TABLE sales_employee (
     employee_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     dob DATE,
@@ -91,7 +88,7 @@ CREATE TABLE sales.employee (
     isProcessed BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE sales.customer (
+CREATE TABLE sales_customer (
     customer_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(50) NOT NULL,
@@ -105,7 +102,7 @@ CREATE TABLE sales.customer (
     isProcessed BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE sales.order (
+CREATE TABLE sales_order (
     order_id SERIAL PRIMARY KEY,
     orderDate DATE NOT NULL,
     total NUMERIC(15, 2) NOT NULL DEFAULT 0,
@@ -125,7 +122,7 @@ CREATE TABLE sales.order (
     isProcessed BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE sales.order_detail (
+CREATE TABLE sales_order_detail (
     order_detail_id SERIAL PRIMARY KEY,
     product_id INT,
     quantity INT,
@@ -141,7 +138,7 @@ CREATE TABLE sales.order_detail (
     isProcessed BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE sales.source_online (
+CREATE TABLE sales_source_online (
     source_online_id SERIAL PRIMARY KEY,
     link_name VARCHAR(255) NOT NULL,
     createdDate DATE NOT NULL,

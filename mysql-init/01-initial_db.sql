@@ -13,7 +13,7 @@ CREATE TABLE production_product (
     standardPrice DECIMAL(15, 2),
     price DECIMAL(15, 2) NOT NULL,
     createdDate DATE,
-    updatedDate DATE,
+    updatedDate DATE DEFAULT NULL,
     checkStatus INT DEFAULT 0
 );
 
@@ -21,7 +21,7 @@ CREATE TABLE production_brand (
     brand_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     createdDate DATE NOT NULL,
-    updatedDate DATE,
+    updatedDate DATE DEFAULT NULL,
     checkStatus INT DEFAULT 0
 );
 
@@ -29,7 +29,7 @@ CREATE TABLE production_category (
     category_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     createdDATE DATE NOT NULL,
-    updatedDATE DATE,
+    updatedDATE DATE DEFAULT NULL,
     checkStatus INT DEFAULT 0
 );
 
@@ -39,7 +39,7 @@ CREATE TABLE sales_store (
     name VARCHAR(255) NOT NULL,
     city_id INT NOT NULL,
     createdDate DATE NOT NULL,
-    updatedDate DATE,
+    updatedDate DATE DEFAULT NULL,
     checkStatus INT DEFAULT 0
 );
 
@@ -47,7 +47,7 @@ CREATE TABLE sales_city (
     city_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     createdDate DATE NOT NULL,
-    updatedDate DATE,
+    updatedDate DATE DEFAULT NULL,
     checkStatus INT DEFAULT 0
 );
 
@@ -58,7 +58,7 @@ CREATE TABLE sales_employee (
     identityNumber VARCHAR(20),
     store_id INT,
     createdDate DATE NOT NULL,
-    updatedDate DATE,
+    updatedDate DATE DEFAULT NULL,
     address VARCHAR(255),
     checkStatus INT DEFAULT 0
 );
@@ -69,7 +69,7 @@ CREATE TABLE sales_customer (
     email VARCHAR(50) NOT NULL,
     phone VARCHAR(20),
     createdDate DATE NOT NULL,
-    updatedDate DATE,
+    updatedDate DATE DEFAULT NULL,
     checkStatus INT DEFAULT 0
 );
 
@@ -85,7 +85,7 @@ CREATE TABLE sales_order (
     employee_id INT,
     store_id INT,
     createdDate DATE NOT NULL,
-    updatedDate DATE,
+    updatedDate DATE DEFAULT NULL,
     checkStatus INT DEFAULT 0
 );
 
@@ -97,7 +97,7 @@ CREATE TABLE sales_order_detail (
     total DECIMAL(15, 2) DEFAULT 0,
     order_id INT,
     createdDate DATE NOT NULL,
-    updatedDate DATE,
+    updatedDate DATE DEFAULT NULL,
     checkStatus INT DEFAULT 0
 );
 
@@ -105,7 +105,7 @@ CREATE TABLE sales_source_online (
     source_online_id INT PRIMARY KEY AUTO_INCREMENT,
     link_name VARCHAR(255) NOT NULL,
     createdDATE DATE NOT NULL,
-    updatedDATE DATE,
+    updatedDATE DATE DEFAULT NULL,
     checkStatus INT DEFAULT 0
 );
 
@@ -121,3 +121,7 @@ ALTER TABLE sales_order ADD CONSTRAINT fk_store_order FOREIGN KEY (store_id) REF
 ALTER TABLE sales_order ADD CONSTRAINT fk_source_online FOREIGN KEY (source_online_id) REFERENCES sales_source_online(source_online_id);
 ALTER TABLE sales_order_detail ADD CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES sales_order(order_id);
 ALTER TABLE sales_order_detail ADD CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES production_product(product_id);
+
+-- Gán quyền cho người dùng thangquang
+GRANT ALL PRIVILEGES ON *.* TO 'thangquang'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;

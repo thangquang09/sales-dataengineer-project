@@ -1,7 +1,0 @@
-{
-    'user': 'thangquang',
-    'password': 'thangquang',
-    'host': 'localhost',
-    'database': 'sales_dw',
-    'port': '5432'
-}
