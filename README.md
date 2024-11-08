@@ -11,9 +11,11 @@
   - [Design MYSQL EDR](#design-mysql-edr)
   - [Staging and Data Warehouse](#staging-and-data-warehouse)
   - [How to run?](#how-to-run)
+    - [0. Allows scripts to run](#0-allows-scripts-to-run)
     - [1. Docker Compose](#1-docker-compose)
     - [2. Airflow Webserver](#2-airflow-webserver)
     - [3. PgAdmin](#3-pgadmin)
+    - [4. Backup DataWarehouse](#4-backup-datawarehouse)
 
 
 ## Introduction
@@ -78,6 +80,16 @@ We will have some insight:
 
 ## How to run?
 
+### 0. Allows scripts to run
+
+You need to `chmod +x` for every bash script in this project.
+
+```
+find . -type f -name "*.sh" -exec chmod +x {} \;
+```
+
+Should be with `sudo`.
+
 ### 1. Docker Compose
 
 ```bash
@@ -103,3 +115,12 @@ You can go to `localhost:8081`, this is pgAdmin, you can add server which config
 - host name: postgres_container
 
 ![pgadmin](image/pgadmin.png)
+
+### 4. Backup DataWarehouse
+
+You can run this bash script to backup this data warehouse:
+```bash
+docker exec -it postgres_container bash -c "/docker-entrypoint-initdb.d/backup_postgres.sh"
+```
+
+Then SQL script will be saved in [backups](backups) folder. It can be in cronjob for backup periodically.
