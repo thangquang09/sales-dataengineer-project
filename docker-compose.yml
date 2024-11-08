@@ -27,9 +27,11 @@ services:
       - POSTGRES_USER=thangquang
       - POSTGRES_PASSWORD=thangquang
       - POSTGRES_DB=sales_db
+      - PGPASSWORD=thangquang # for backup data warehouse
     volumes:
       - ./postgres-init:/docker-entrypoint-initdb.d
       - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups 
     restart: always
     networks:
       - thangquang
@@ -64,7 +66,7 @@ services:
       - shared_airflow_libs:/home/airflow/.local/lib/python3.10/site-packages
     healthcheck:
       test: ['CMD-SHELL', "[ -f /opt/airflow/airflow-webserver.pid ]"]
-      interval: 2m
+      interval: 30s
       timeout: 2m
       retries: 10
     restart: always

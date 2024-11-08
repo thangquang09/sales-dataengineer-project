@@ -1,11 +1,9 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.operators.bash import BashOperator
 from datetime import datetime, timedelta
 from setting import *
 from ETL import generate_daily_data, load_into_staging, load_into_dw, setup_mysql_database, setup_postgres_database, setup_dw_database, truncate_staging
-import logging
-
-logging.basicConfig(level=logging.INFO)
 
 default_args = {
     'owner': 'airflow',
@@ -17,8 +15,10 @@ default_args = {
     'start_date': datetime(2024, 10, 25),
 }
 
+# Create Connection
 mysql_engine, staging_engine, dw_engine = create_engines()
 mysql_session, staging_session, dw_session = create_sessions(mysql_engine, staging_engine, dw_engine)
+# Set up databases
 setup_mysql_database(mysql_engine)
 setup_postgres_database(staging_engine)
 setup_dw_database(dw_engine)
@@ -27,10 +27,8 @@ def close_database(sessions):
     try:
         for session in sessions:
             session.close()
-        logging.info("Closed databases")
     except Exception as e:
-        logging.error(f"Error closing db: {e}")
-
+        return
 
 with DAG('ETL_sales_project', default_args=default_args, schedule_interval='@daily', catchup=False) as dag:
     # generate daily data
