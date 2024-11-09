@@ -150,16 +150,16 @@ END$$
 DELIMITER ;
 
 -- INSERT CITY FIRST FOR VISUALIZATION
-CALL InsertSalesCity("Hà Nội", "2024-10-4");
-CALL InsertSalesCity("Hồ Chí Minh", "2024-10-4");
-CALL InsertSalesCity("Hải Phòng", "2024-10-4");
-CALL InsertSalesCity("Cần Thơ", "2024-10-4");
-CALL InsertSalesCity("Đà Nẵng", "2024-10-4");
-CALL InsertSalesCity("Biên Hòa", "2024-10-4");
-CALL InsertSalesCity("Hải Dương", "2024-10-4");
-CALL InsertSalesCity("Huế", "2024-10-4");
-CALL InsertSalesCity("Thuận An", "2024-10-4");
-CALL InsertSalesCity("Thủ Đức", "2024-10-4");
+CALL InsertSalesCity("Ha Noi", "2024-10-4");
+CALL InsertSalesCity("Ho Chi Minh", "2024-10-4");
+CALL InsertSalesCity("Hai Phong", "2024-10-4");
+CALL InsertSalesCity("Can Tho", "2024-10-4");
+CALL InsertSalesCity("Da Nang", "2024-10-4");
+CALL InsertSalesCity("Bien Hoa", "2024-10-4");
+CALL InsertSalesCity("Hai Duong", "2024-10-4");
+CALL InsertSalesCity("Hue", "2024-10-4");
+CALL InsertSalesCity("Thuan An", "2024-10-4");
+CALL InsertSalesCity("Thu Duc", "2024-10-4");
 
 -- INSERT LINKS
 CALL InsertSalesSourceOnline("Shopee", "2024-10-4");
