@@ -92,9 +92,7 @@ When all containers are finished, you go to `localhost:8080`, default port of ai
 
 ![GUI airflow webserver](image/airflow_webserver.png)
 
-Click "Play" button to trigger
-
-![trigger](image/airflow_trigger.png)
+Click "Play" button to trigger, after that, the data in mysql database will be loaded to Data Warehouse.
 
 ### 3. PgAdmin
 
@@ -119,3 +117,4 @@ Then SQL script will be saved in [backups](backups) folder. It can be in cronjob
 
 [Link to IBM Cognos Analytics Dashboard](https://ap1.ca.analytics.ibm.com/bi/?perspective=dashboard&pathRef=.my_folders%2FSales-DE-Project-2&action=view&mode=dashboard&subView=model000001930f291898_00000000)
 
+You also access dashboard locally at [Sales-DE-Projet-2.pdf](Sales-DE-Project-2.pdf)
