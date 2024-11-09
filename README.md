@@ -6,7 +6,7 @@
 
 - [SALES DATA ENGINNER PROJECT](#sales-data-enginner-project)
   - [Introduction](#introduction)
-  - [Tools](#tools)
+  - [Technologies](#technologies)
   - [Requirements](#requirements)
   - [Design MYSQL EDR](#design-mysql-edr)
   - [Staging and Data Warehouse](#staging-and-data-warehouse)
@@ -23,12 +23,14 @@
 
 This is my Data Engineer Project on sales data. In this project, I designed a MySQL database to store daily transaction data and a two-layer Data Warehouse using PostgreSQL, consisting of a Staging layer and a Data Warehouse layer. In the Data Warehouse, I created VIEWS to meet the requirements that will be listed later, allowing the construction of dashboards to display these requirements. The tool I used for ETL is Python (ORM by SqlAlchemy), and I scheduled periodic data loads into the Data Warehouse using Apache Airflow. All techniques will be packaged using Docker Compose.
 
-## Tools
+## Technologies
 
 - MySQl
 - PostgreSQL
 - Airflow
 - Python SqlAlchemy
+- IBM Cognos Analytics
+- Docker
 
 ## Requirements
 
