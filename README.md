@@ -16,6 +16,7 @@
     - [2. Airflow Webserver](#2-airflow-webserver)
     - [3. PgAdmin](#3-pgadmin)
     - [4. Backup DataWarehouse](#4-backup-datawarehouse)
+  - [DashBoard](#dashboard)
 
 
 ## Introduction
@@ -42,12 +43,16 @@ The client company needs to manage a chain of electronics stores, requiring mana
 Build a dashboard that displays:
 
 - Revenue, profit, number of orders value based on criteria: product, store, employee, city, customer
-- Quantity of products sold by category, store, city
+- Quantity of products sold by category, brand
 - Ratio of online/offline revenue and order numbers over time
 - For online orders, the structure of order numbers and revenue by source ("Tiki", "Shopee", etc.)
 - Total revenue by store, employee, product
 - Top 10 best-selling and worst-selling products
 - Top 10 employees and stores with the highest and lowest revenue.
+
+Let's see demo dashboard:
+
+![Demo Dashboard](image/demo_dashboard.png)
 
 ## Design MYSQL EDR
 
@@ -62,21 +67,6 @@ The schema of staging layer is exactly the same as MySQL's schema but adds contr
 The schema of data warehouse layer is in picture below:
 
 ![Start Schema](image/star_schema.png)
-
-This DW has 3 materialized views to support creating dashboard `view_store_city_employee_cus`, `view_quantity_cate_store_city`, `view_online_offline_summary`.
-
-We will have some insight:
-
-- Revenue, profit, number of orders, average value of employee:
-![employee](image/revenue_employee.png)
-- Quantity of products sold by store
-![store](image/quantity_store.png)
-- For online orders, the structure of order numbers and revenue by source ("Tiki", "Shopee", etc.)
-![online offline](image/revenue_on_off.png)
-- Top 10 best-selling products
-![top 10 best](image/top_10best.png)
-- Top 10 worst-selling products
-![top 10 worst](image/top_10worst.png)
 
 ## How to run?
 
@@ -124,3 +114,8 @@ docker exec -it postgres_container bash -c "/docker-entrypoint-initdb.d/backup_p
 ```
 
 Then SQL script will be saved in [backups](backups) folder. It can be in cronjob for backup periodically.
+
+## DashBoard
+
+[Link to IBM Cognos Analytics Dashboard](https://ap1.ca.analytics.ibm.com/bi/?perspective=dashboard&pathRef=.my_folders%2FSales-DE-Project-2&action=view&mode=dashboard&subView=model000001930f291898_00000000)
+
