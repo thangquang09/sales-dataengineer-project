@@ -26,8 +26,8 @@ services:
     environment:
       - POSTGRES_USER=thangquang
       - POSTGRES_PASSWORD=thangquang
-      - POSTGRES_DB=sales_db
-      - PGPASSWORD=thangquang # for backup data warehouse
+      - POSTGRES_DB=postgres
+      - PGPASSWORD=thangquang # for backup data warehouse without password
     volumes:
       - ./postgres-init:/docker-entrypoint-initdb.d
       - postgres_data:/var/lib/postgresql/data
