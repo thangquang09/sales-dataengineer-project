@@ -147,90 +147,38 @@ INSERT INTO Dim_Source_Online(source_online_id, link_name) VALUES (1000, 'offlin
 -- Top 10 best-selling and worst-selling products
 -- Top 10 employees and stores with the highest and lowest revenue.
 
-CREATE MATERIALIZED VIEW view_store_city_employee_cus AS
-SELECT
-	s.store_id,
-	s.name as store_name,
-	e.employee_id,
-	e.name as employee_name,
-	city.city_id,
-	city.name as city_name,
-	c.customer_id,
-	c.name as customer_name,
-	SUM(fo.revenue) AS revenue,
-	SUM(fo.revenue - fo.standardcost) as profit,
-	SUM(fo.number_order) as number_order,
-	AVG(fo.revenue) as average_value
-FROM
-	fact_sales_order fo
-	JOIN dim_store s ON fo.store_id = s.store_id
-	JOIN dim_city city ON s.city_id = city.city_id
-	JOIN dim_employee e ON fo.employee_id = e.employee_id
-	JOIN dim_customer c ON fo.customer_id = c.customer_id
-GROUP BY
-	s.store_id,
-	s.name,
-	e.employee_id,
-	e.name,
-	city.city_id,
-	city.name,
-	c.customer_id,
-	c.name;
-
-CREATE MATERIALIZED VIEW view_quantity_cate_store_city AS
-SELECT
-    fp.product_id,
-    p.name as product_name,
-	cate.category_id,
-	cate.name as category_name,
-	s.store_id,
-	s.name as store_name,
-	city.city_id,
-	city.name as city_name,
-	SUM(fp.quantity) as quantity,
-    SUM(fp.revenue) as revenue,
-    SUM(fp.profit) as profit
+CREATE MATERIALIZED VIEW view_fact_production AS
+SELECT p.name as product_name, b.name as brand, cate.name as category, revenue, quantity, profit, month, y.name as year
 FROM
 	fact_production fp
-	JOIN dim_product p ON fp.product_id = p.product_id
-	JOIN dim_category cate ON cate.category_id = p.category_id
-	JOIN dim_store s ON s.store_id = fp.store_id
-	JOIN dim_city city ON s.city_id = city.city_id
-GROUP BY
-	fp.product_id,
-	p.name,
-	cate.category_id,
-	cate.name,
-	s.store_id,
-	s.name,
-	city.city_id,
-	city.name;
+JOIN
+	dim_date dd ON dd.date_id = fp.date_id
+JOIN
+	dim_month m ON m.month_id = dd.month_id
+JOIN
+	dim_year y ON y.year_id = dd.year_id
+JOIN
+	dim_product p ON p.product_id = fp.product_id
+JOIN
+	dim_brand b ON b.brand_id = p.brand_id
+JOIN
+	dim_category cate ON cate.category_id = p.category_id;
 
-CREATE MATERIALIZED VIEW view_online_offline_summary AS 
-SELECT
-	d.date_id,
-	m.month_id,
-	m.name as month_name,
-	y.year_id,
-	y.name as year,
-	fo.source_online_id,
-	so.link_name,
-	SUM(fo.number_order_online) as number_order_online,
-	SUM(fo.number_order_offline) as number_order_offline,
-	SUM(fo.revenue) as revenue,
-	SUM(fo.revenue_online) as revenue_online,
-	SUM(fo.revenue_offline) as revenue_offline
-FROM
-	fact_sales_order fo
-	JOIN dim_date d ON d.date_id = fo.date_id
-	JOIN dim_month m ON m.month_id = d.month_id
-	JOIN dim_year y ON y.year_id = d.year_id
-	JOIN dim_source_online so ON so.source_online_id = fo.source_online_id
-GROUP BY
-	d.date_id,
-	m.month_id,
-	m.name,
-	y.year_id,
-	y.name,
-	fo.source_online_id,
-	so.link_name;
+CREATE MATERIALIZED VIEW view_fact_sale_orders AS
+
+SELECT e.name as employee_name, st.name as store_name, city.name as city_name, src.link_name, m.month, y.name as year, revenue, revenue_online, revenue_offline, profit, number_order, number_order_online, number_order_offline
+FROM fact_sales_order f
+JOIN
+	dim_store st ON st.store_id = f.store_id
+JOIN
+	dim_city city ON st.city_id = city.city_id
+JOIN
+	dim_employee e ON e.employee_id = f.employee_id
+JOIN
+	dim_date dd ON dd.date_id = f.date_id
+JOIN
+	dim_month m ON m.month_id = dd.month_id
+JOIN
+	dim_year y ON y.year_id = dd.year_id
+JOIN
+	dim_source_online src ON src.source_online_id = f.source_online_id;

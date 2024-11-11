@@ -60,7 +60,7 @@ To meet the client’s needs, a dashboard was created with the following metrics
 
 A sample of the dashboard is shown below:
 
-![Demo Dashboard](image/demo_dashboard.png)
+![Demo Dashboard](image/demo_dashboard.jpg)
 
 ## 3. Technology Stack
 
@@ -131,6 +131,6 @@ This command saves a SQL script in the `backups` folder, allowing for scheduled 
 ### 5.4. Dashboard Access
 
 - **IBM Cognos Analytics Dashboard**: View the dashboard online through IBM Cognos at the following link:
-  [IBM Cognos Analytics Dashboard](https://ap1.ca.analytics.ibm.com/bi/?perspective=dashboard&pathRef=.my_folders%2FSales-DE-Project-2&action=view&mode=dashboard&subView=model000001930f291898_00000000)
+  [IBM Cognos Analytics Dashboard](https://ap1.ca.analytics.ibm.com/bi/?perspective=dashboard&pathRef=.my_folders%2FSales-DE-Project-2&action=view&mode=dashboard&subView=model000001930fcffd47_00000000)
 
 - **Local Dashboard Access**: A PDF version of the dashboard can be accessed locally at [Sales-DE-Project-2.pdf](Sales-DE-Project-2.pdf).
