@@ -1,122 +1,136 @@
-# SALES DATA ENGINNER PROJECT
+<h1>SALES DATA ENGINEER PROJECT</h1>
 
 ![Background](image/background.jpg)
 
-**TABLE OF CONTENT**
-
-- [SALES DATA ENGINNER PROJECT](#sales-data-enginner-project)
-  - [Introduction](#introduction)
-  - [Technologies](#technologies)
-  - [Requirements](#requirements)
-  - [Design MYSQL EDR](#design-mysql-edr)
-  - [Staging and Data Warehouse](#staging-and-data-warehouse)
-  - [How to run?](#how-to-run)
-    - [0. Allows scripts to run](#0-allows-scripts-to-run)
-    - [1. Docker Compose](#1-docker-compose)
-    - [2. Airflow Webserver](#2-airflow-webserver)
-    - [3. PgAdmin](#3-pgadmin)
-    - [4. Backup DataWarehouse](#4-backup-datawarehouse)
-  - [DashBoard](#dashboard)
+- [1. Project Overview](#1-project-overview)
+- [2. Project Details](#2-project-details)
+  - [2.1. Database Design and Data Flow](#21-database-design-and-data-flow)
+  - [2.2. Staging and Data Warehouse Layers](#22-staging-and-data-warehouse-layers)
+  - [2.3. Dashboard Requirements](#23-dashboard-requirements)
+- [3. Technology Stack](#3-technology-stack)
+- [4. Architecture](#4-architecture)
+- [5. Getting Started](#5-getting-started)
+  - [5.1. Prerequisites](#51-prerequisites)
+  - [5.2. Running the Project](#52-running-the-project)
+  - [5.3. Backup Process](#53-backup-process)
+  - [5.4. Dashboard Access](#54-dashboard-access)
 
 
-## Introduction
+## 1. Project Overview
 
-This is my Data Engineer Project on sales data. In this project, I designed a MySQL database to store daily transaction data and a two-layer Data Warehouse using PostgreSQL, consisting of a Staging layer and a Data Warehouse layer. In the Data Warehouse, I created VIEWS to meet the requirements that will be listed later, allowing the construction of dashboards to display these requirements. The tool I used for ETL is Python (ORM by SqlAlchemy), and I scheduled periodic data loads into the Data Warehouse using Apache Airflow. All techniques will be packaged using Docker Compose.
+This project is designed as a data engineering solution for managing sales data in a chain of electronics stores. It involves setting up a MySQL database for daily transaction data, a PostgreSQL-based data warehouse with a two-layer structure (Staging and Data Warehouse), and creating dashboards to visualize sales performance and other KPIs. Data processing and loading is orchestrated using Apache Airflow, while the ETL operations are managed using Python and SQLAlchemy. The entire setup is containerized with Docker Compose, enabling easy deployment and scalability.
 
-## Technologies
+## 2. Project Details
 
-- MySQl
-- PostgreSQL
-- Airflow
-- Python SqlAlchemy
-- IBM Cognos Analytics
-- Docker
+### 2.1. Database Design and Data Flow
 
-## Requirements
+The source data is stored in a MySQL database that manages the daily sales data. The following entities are modeled:
 
-The client company needs to manage a chain of electronics stores, requiring management of orders, products, stores, employees, and customers:
+- **Product**: Stores product information including name, category, standard price, price, and brand.
+- **Store**: Contains store details like name and city.
+- **Employee**: Stores information about store employees.
+- **Customer**: Holds customer details including name and email.
+- **Order**: Captures details of each order, including product, customer, store, order date, and online/offline status. For online orders, the platform (e.g., Tiki, Shopee) is also recorded.
 
-- **Product**: name, category, standard price, price, brand
-- **Store**: name, city
-- **Employee**: name, store
-- **Customer**: name, email
-- **Order**: details of product, customer, store, order date, online/offline status (if online, then specify "Tiki", "Shopee", etc.)
-
-Build a dashboard that displays:
-
-- Revenue, profit, number of orders value based on criteria: product, store, employee, city, customer
-- Quantity of products sold by category, brand
-- Ratio of online/offline revenue and order numbers over time
-- For online orders, the structure of order numbers and revenue by source ("Tiki", "Shopee", etc.)
-- Total revenue by store, employee, product
-- Top 10 best-selling and worst-selling products
-- Top 10 employees and stores with the highest and lowest revenue.
-
-Let's see demo dashboard:
-
-![Demo Dashboard](image/demo_dashboard.png)
-
-## Design MYSQL EDR
-
-This is the schema of the source database that I have designed. The RDBMS used is MySQL.
+The MySQL database schema is shown below:
 
 ![MYSQL ERD](image/mysql_erd.png)
 
-## Staging and Data Warehouse
+### 2.2. Staging and Data Warehouse Layers
 
-The schema of staging layer is exactly the same as MySQL's schema but adds control columns `insertDate`, `updateDate`, `sourceSystem`, `isProcessed`, but without any constraint because it help me load data more easy.
+The data flows from the MySQL database to the PostgreSQL data warehouse. The warehouse has two layers:
 
-The schema of data warehouse layer is in picture below:
+- **Staging Layer**: Mirrors the MySQL schema but includes control columns (`insertDate`, `updateDate`, `sourceSystem`, `isProcessed`). These control columns simplify the ETL process. The Staging layer has no constraints, enabling easy data loading.
 
-![Start Schema](image/star_schema.png)
+- **Data Warehouse Layer**: This layer follows a star schema, designed to support complex analytical queries. The schema is as follows:
 
-## How to run?
+![Star Schema](image/star_schema.png)
 
-### 0. Allows scripts to run
+### 2.3. Dashboard Requirements
 
-You need to `chmod +x` for every bash script in this project.
+To meet the client’s needs, a dashboard was created with the following metrics:
 
-```
-find . -type f -name "*.sh" -exec chmod +x {} \;
-```
+- Revenue, profit, and order count segmented by product, store, employee, city, and customer.
+- Quantity of products sold by category and brand.
+- Online/offline revenue and order count ratios over time.
+- Analysis of online orders by source (e.g., Tiki, Shopee).
+- Total revenue by store, employee, and product.
+- Top 10 best-selling and worst-selling products.
+- Top 10 employees and stores by highest and lowest revenue.
 
-Should be with `sudo`.
+A sample of the dashboard is shown below:
 
-### 1. Docker Compose
+![Demo Dashboard](image/demo_dashboard.png)
 
-```bash
-docker compose up -d
-```
+## 3. Technology Stack
 
-When all containers are finished, you go to `localhost:8080`, default port of airflow webserver, you can login with `admin:admin` which is username and password.
+- **MySQL**: Used as the transactional database for storing daily sales data.
+- **PostgreSQL**: Hosts the data warehouse with staging and analytical layers.
+- **Apache Airflow**: Manages and schedules ETL workflows.
+- **Python with SQLAlchemy**: Primary ETL tool used for data manipulation and loading.
+- **IBM Cognos Analytics**: Used for creating and visualizing the dashboard.
+- **Docker**: Containerizes the entire setup for easy deployment and portability.
 
-### 2. Airflow Webserver
+## 4. Architecture
 
-![GUI airflow webserver](image/airflow_webserver.png)
+The architecture consists of the following components:
 
-Click "Play" button to trigger, after that, the data in mysql database will be loaded to Data Warehouse.
+- **Data Ingestion**: MySQL stores transaction data, which is then periodically ingested into the PostgreSQL staging layer.
+- **ETL Process**: Data is loaded from the staging layer to the data warehouse using Python and SQLAlchemy scripts scheduled in Apache Airflow.
+- **Data Warehouse**: The PostgreSQL data warehouse serves as the central data repository for analysis.
+- **Dashboard Visualization**: IBM Cognos Analytics generates real-time dashboards for key sales metrics.
 
-### 3. PgAdmin
+## 5. Getting Started
 
-You can go to `localhost:8081`, this is pgAdmin, you can add server which config:
-- username: thangquang
-- password: thangquang
-- port: 5432
-- host name: postgres_container
+### 5.1. Prerequisites
 
-![pgadmin](image/pgadmin.png)
+Before running the project, ensure the following are installed:
 
-### 4. Backup DataWarehouse
+- **Docker and Docker Compose**: Required for containerizing and running the services.
+- **IBM Cognos Analytics Account**: To access the dashboard on IBM Cognos, if not running locally.
 
-You can run this bash script to backup this data warehouse:
+### 5.2. Running the Project
+
+0. **Clone Project Repository:**
+    ```bash
+    git clone https://github.com/thangquang09/sales-dataengineer-project
+    cd sales-dataengineer-project
+    ```
+
+1. **Set Script Permissions**: Allow bash scripts to execute by running:
+    ```bash
+    find . -type f -name "*.sh" -exec chmod +x {} \;
+    ```
+
+2. **Start Docker Containers**: Use Docker Compose to bring up all necessary containers.
+    ```bash
+    docker compose up -d
+    ```
+    Once all containers are up, access the Airflow webserver at `localhost:8080`. Default login credentials are:
+    - **Username**: `admin`
+    - **Password**: `admin`
+
+3. **Trigger Airflow Workflows**: In the Airflow webserver, click the "Play" button to start data loading from the MySQL database into the Data Warehouse.
+
+4. **PgAdmin Access**: Access PgAdmin at `localhost:8081` with the following settings:
+    - **Username**: `thangquang`
+    - **Password**: `thangquang`
+    - **Host**: `postgres_container`
+    - **Port**: `5432`
+
+### 5.3. Backup Process
+
+To backup the Data Warehouse, run the following command:
+
 ```bash
 docker exec -it postgres_container bash -c "/docker-entrypoint-initdb.d/backup_postgres.sh"
 ```
 
-Then SQL script will be saved in [backups](backups) folder. It can be in cronjob for backup periodically.
+This command saves a SQL script in the `backups` folder, allowing for scheduled or periodic backups via cron jobs.
 
-## DashBoard
+### 5.4. Dashboard Access
 
-[Link to IBM Cognos Analytics Dashboard](https://ap1.ca.analytics.ibm.com/bi/?perspective=dashboard&pathRef=.my_folders%2FSales-DE-Project-2&action=view&mode=dashboard&subView=model000001930f291898_00000000)
+- **IBM Cognos Analytics Dashboard**: View the dashboard online through IBM Cognos at the following link:
+  [IBM Cognos Analytics Dashboard](https://ap1.ca.analytics.ibm.com/bi/?perspective=dashboard&pathRef=.my_folders%2FSales-DE-Project-2&action=view&mode=dashboard&subView=model000001930f291898_00000000)
 
-You also access dashboard locally at [Sales-DE-Projet-2.pdf](Sales-DE-Project-2.pdf)
+- **Local Dashboard Access**: A PDF version of the dashboard can be accessed locally at [Sales-DE-Project-2.pdf](Sales-DE-Project-2.pdf).
