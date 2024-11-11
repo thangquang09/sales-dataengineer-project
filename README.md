@@ -34,7 +34,7 @@ The source data is stored in a MySQL database that manages the daily sales data.
 
 The MySQL database schema is shown below:
 
-![MYSQL ERD](image/mysql_erd.png)
+![MYSQL ERD](image/mysql_schema.png)
 
 ### 2.2. Staging and Data Warehouse Layers
 
@@ -44,7 +44,7 @@ The data flows from the MySQL database to the PostgreSQL data warehouse. The war
 
 - **Data Warehouse Layer**: This layer follows a star schema, designed to support complex analytical queries. The schema is as follows:
 
-![Star Schema](image/star_schema.png)
+![Star Schema](image/dw_schema.png)
 
 ### 2.3. Dashboard Requirements
 
