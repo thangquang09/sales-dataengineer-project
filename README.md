@@ -62,6 +62,8 @@ A sample of the dashboard is shown below:
 
 ![Demo Dashboard](image/demo_dashboard.jpg)
 
+To make dashboard like this, I created 2 materialized view in data warehouse named `view_fact_sale_orders` and `view_fact_production` for exporting CSV file to creating dashboard (If use postgres on cloud, can use directly data from it). Use CSV files for locally running.
+
 ## 3. Technology Stack
 
 - **MySQL**: Used as the transactional database for storing daily sales data.

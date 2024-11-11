@@ -3,7 +3,7 @@ from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
 from datetime import datetime, timedelta
 from setting import *
-from ETL import generate_daily_data, load_into_staging, load_into_dw, setup_mysql_database, setup_postgres_database, setup_dw_database, truncate_staging
+from ETL import generate_daily_data, load_into_staging, load_into_dw, setup_mysql_database, setup_postgres_database, setup_dw_database, truncate_staging, refresh_view
 
 default_args = {
     'owner': 'airflow',
@@ -56,11 +56,17 @@ with DAG('ETL_sales_project', default_args=default_args, schedule_interval='@dai
         python_callable=truncate_staging,
         op_kwargs={'staging_session': staging_session}
     )
-    # close database
+    # refresh views
     t5 = PythonOperator(
+        task_id='refresh_views',
+        python_callable=refresh_view,
+        op_kwargs={'dw_session': dw_session}
+    )
+    # close database
+    t6 = PythonOperator(
         task_id='close_database',
         python_callable=close_database,
         op_kwargs={'sessions': [mysql_session, staging_session, dw_session]},
     )
 
-    t1 >> t2 >> t3 >> t4 >> t5
+    t1 >> t2 >> t3 >> t4 >> t5 >> t6

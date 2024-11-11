@@ -10,7 +10,7 @@ import random
 import time
 
 
-def generate_daily_data(mysql_session, min_cus=100, max_cus=300, min_order=1000, max_order=3000):
+def generate_daily_data(mysql_session, min_cus=30, max_cus=60, min_order=200, max_order=400):
     try:
         print("Generating data ...")
         # Number of customers and orders to create
@@ -656,6 +656,16 @@ def truncate_staging(staging_session):
     except Exception as e:
         print(f"Error truncating staging tables: {e}")
         staging_session.rollback()
+
+def refresh_view(dw_session):
+    try:
+        dw_session.execute("REFRESH MATERIALIZED VIEW view_fact_sale_orders;")
+        dw_session.execute("REFRESH MATERIALIZED VIEW view_fact_production;")
+        dw_session.commit()
+        print("Successfully refreshed views")
+    except Exception as e:
+        print(f"Error refreshing views: {e}")
+        dw_session.rollback()
 
 if __name__ == "__main__":
     mysql_engine, staging_engine, dw_engine = create_engines()
